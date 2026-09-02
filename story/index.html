@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#03070d">
+  <meta name="description" content="Why ChillScreen was built: a personal macOS tool for more control over evening screen warmth, dimming, room light, and daily timing.">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <meta property="og:type" content="article"><meta property="og:site_name" content="ChillScreen">
+  <meta property="og:title" content="Why I built ChillScreen"><meta property="og:description" content="The personal story behind ChillScreen and the screen controls I could not find elsewhere.">
+  <meta property="og:image" content="https://ejeer.github.io/ChillScreen/assets/chillscreen-header.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1600"><meta property="og:image:height" content="470"><meta property="og:image:alt" content="ChillScreen daily-cycle interface for macOS"><meta property="og:url" content="https://ejeer.github.io/ChillScreen/story/">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Why I built ChillScreen"><meta name="twitter:description" content="The personal story behind ChillScreen and the screen controls I could not find elsewhere."><meta name="twitter:image" content="https://ejeer.github.io/ChillScreen/assets/chillscreen-header.png"><meta name="twitter:image:alt" content="ChillScreen daily-cycle interface for macOS">
+  <link rel="canonical" href="https://ejeer.github.io/ChillScreen/story/"><link rel="describedby" href="https://ejeer.github.io/ChillScreen/llms.txt" type="text/plain"><link rel="alternate" type="text/markdown" href="https://raw.githubusercontent.com/EJeer/ChillScreen/main/docs/story.md"><link rel="icon" href="../assets/chillscreen-icon.png" type="image/png" sizes="512x512"><link rel="apple-touch-icon" href="../assets/chillscreen-icon.png"><link rel="stylesheet" href="../assets/site.css">
+  <title>Why I built ChillScreen</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header"><a class="brand" href="../" aria-label="ChillScreen home"><img src="../assets/chillscreen-icon.png" alt="" width="42" height="42"><span>ChillScreen</span></a><nav aria-label="Primary navigation"><a href="../user-guide/">User Guide</a><a href="../releases/1.1.0/">Release Notes</a><a href="../privacy/">Privacy</a><a href="https://github.com/EJeer/ChillScreen">GitHub</a></nav><a class="header-download" href="https://github.com/EJeer/ChillScreen/releases/download/v1.1.0/ChillScreen-1.1.0.dmg">Download</a></header>
+  <main class="doc-main" id="main">
+    <a class="doc-back" href="../">← Back to ChillScreen</a>
+    <header class="doc-hero"><p class="eyebrow">The story</p><h1>Why I built ChillScreen</h1><p class="doc-lede">I built ChillScreen because I could not find a screen tool that worked the way I wanted.</p></header>
+    <article class="prose">
+      <p>I've had some trouble with sleep for a long time, and one thing I wanted to control better was my exposure to bright and blue light in the evening.</p>
+      <p>macOS Night Shift never really worked for me. The transition felt too limited, the screen never became red enough, and in practice it felt more like an on/off switch than something I could truly tune around my evening.</p>
+      <p>I tried other apps too. Most of them either solved only part of the problem or put the features I actually wanted behind a roughly $15 paywall.</p>
+      <p>So I decided to make my own. :)</p>
+      <h2>Two effects, adjusted independently</h2>
+      <p>ChillScreen gradually adjusts two things independently: screen dimming and red-light intensity. Both curves can be customised instead of following a fixed preset.</p>
+      <p>It can also use the Mac's ambient-light sensor. When the room gets darker, ChillScreen can automatically increase dimming and warmth based on the actual lux level and thresholds you calibrate yourself.</p>
+      <h2>A tool that can learn without hiding its logic</h2>
+      <p>There is a Learning mode too. Instead of assuming one brightness or colour curve works for every condition and everyone, ChillScreen can learn from the adjustments you make and adapt future Automatic evenings to your preferences.</p>
+      <p>I also wanted to understand <em>when</em> and how these changes happen, not just set a timer at some point of the day.</p>
+      <p>That is why ChillScreen has a Daily Cycle where you set your wake-up time, bedtime, evening transition, and the point when you want the maximum effect. It visualises the whole day together with normalized circadian reference rhythms, so you can see how the screen settings relate to your sleep/wake schedule.</p>
+      <p>Pretty much everything can be adjusted manually if you want to go deeper.</p>
+      <h2>Why I shared it</h2>
+      <p>At first, I was making this purely for myself.</p>
+      <p>Somewhere along the way it started becoming the tool I had been looking for in the first place. So I decided it was worth sharing.</p>
+      <p>ChillScreen remains free for personal use, nonprofit organizations, and government educational organizations. After two weeks, you can decide what it is worth to you — and €0 is always a complete choice. No features are locked.</p>
+      <div class="doc-actions"><a class="button button-primary" href="https://github.com/EJeer/ChillScreen/releases/download/v1.1.0/ChillScreen-1.1.0.dmg">Download for macOS</a><a class="button button-secondary" href="../user-guide/">Read the User Guide</a></div>
+    </article>
+  </main>
+  <footer><div class="footer-brand"><img src="../assets/chillscreen-icon.png" alt="" width="32" height="32"><span>ChillScreen</span></div><div class="footer-links"><a href="../">Home</a><a href="../privacy/">Privacy</a><a href="https://github.com/EJeer/ChillScreen/blob/main/docs/terms-of-use.md">Terms</a><a href="https://buymeacoffee.com/chillscreen">Buy me a coffee</a></div><p>© EJeer</p></footer>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#03070d">
+  <meta name="description" content="ChillScreen is a private macOS menu-bar app that gradually adjusts screen warmth and dimming around your day, local sunlight, and room light.">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ChillScreen">
+  <meta property="og:title" content="ChillScreen — a daily cycle for your display">
+  <meta property="og:description" content="Automatic screen warmth and dimming for macOS, shaped around your day and kept entirely on your Mac.">
+  <meta property="og:image" content="https://ejeer.github.io/ChillScreen/assets/chillscreen-header.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1600">
+  <meta property="og:image:height" content="470">
+  <meta property="og:image:alt" content="ChillScreen daily-cycle interface for macOS">
+  <meta property="og:url" content="https://ejeer.github.io/ChillScreen/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ChillScreen — a daily cycle for your display">
+  <meta name="twitter:description" content="Automatic screen warmth and dimming for macOS, shaped around your day and kept entirely on your Mac.">
+  <meta name="twitter:image" content="https://ejeer.github.io/ChillScreen/assets/chillscreen-header.png">
+  <meta name="twitter:image:alt" content="ChillScreen daily-cycle interface for macOS">
+  <link rel="canonical" href="https://ejeer.github.io/ChillScreen/">
+  <link rel="describedby" href="https://ejeer.github.io/ChillScreen/llms.txt" type="text/plain">
+  <link rel="icon" href="assets/chillscreen-icon.png" type="image/png" sizes="512x512">
+  <link rel="apple-touch-icon" href="assets/chillscreen-icon.png">
+  <link rel="stylesheet" href="assets/site.css">
+  <title>ChillScreen — Automatic screen warmth and dimming for macOS</title>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "ChillScreen",
+    "operatingSystem": "macOS 14 Sonoma or later",
+    "applicationCategory": "UtilitiesApplication",
+    "description": "A private macOS menu-bar app that gradually adjusts display warmth and dimming around your day, local sunlight, and room light.",
+    "downloadUrl": "https://github.com/EJeer/ChillScreen/releases/download/v1.1.0/ChillScreen-1.1.0.dmg",
+    "screenshot": "https://ejeer.github.io/ChillScreen/assets/chillscreen-header.png",
+    "image": "https://ejeer.github.io/ChillScreen/assets/chillscreen-icon.png",
+    "softwareVersion": "1.1.0",
+    "softwareRequirements": "macOS 14 Sonoma or later",
+    "releaseNotes": "https://ejeer.github.io/ChillScreen/releases/1.1.0/",
+    "license": "https://github.com/EJeer/ChillScreen/blob/main/docs/terms-of-use.md",
+    "isAccessibleForFree": true,
+    "featureList": [
+      "Automatic daily cycle using schedule and optional local sunlight",
+      "Independent screen warmth and dimming controls",
+      "Optional ambient-light adaptation with user calibration",
+      "Optional local learning from evening adjustments",
+      "Multiple-display support"
+    ],
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "EUR"
+    }
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="ChillScreen home">
+      <img src="assets/chillscreen-icon.png" alt="" width="42" height="42">
+      <span>ChillScreen</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="https://github.com/EJeer/ChillScreen">GitHub</a>
+      <a href="user-guide/">User Guide</a>
+      <a href="story/">Story</a>
+      <a href="https://buymeacoffee.com/chillscreen">Buy me a coffee</a>
+    </nav>
+    <a class="header-download" href="https://github.com/EJeer/ChillScreen/releases/download/v1.1.0/ChillScreen-1.1.0.dmg">Download</a>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <p class="eyebrow">A daily cycle for your display</p>
+        <h1>Let your screen follow the evening.</h1>
+        <p class="hero-lede">The ChillScreen app gradually adjusts warmth and dimming around your schedule, local sunlight, and the light in your room — without accounts, in-app analytics, or screen capture.</p>
+        <p class="hero-flexibility">Use it entirely automatically without ever opening a settings menu, teach it your rhythm and preferences, or explore the detailed controls when you want to go deeper.</p>
+        <p class="hero-free">Free for personal use, nonprofit organizations, and government educational organizations.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="https://github.com/EJeer/ChillScreen/releases/download/v1.1.0/ChillScreen-1.1.0.dmg">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
+            Download for macOS
+          </a>
+        </div>
+        <p class="hero-note">Version 1.1.0 · macOS 14 Sonoma or later · every feature available</p>
+      </div>
+
+      <figure class="hero-atmosphere">
+        <img
+          src="assets/chillscreen-evening-room-v2.jpg"
+          alt="A dim evening workspace with a warm macOS desktop on the display."
+          width="1400"
+          height="933"
+          fetchpriority="high"
+        >
+      </figure>
+
+      <section class="interactive-preview" aria-labelledby="interactive-preview-title">
+        <div class="interactive-preview-heading">
+          <h2 id="interactive-preview-title">One view of the whole day.</h2>
+          <p>See sunlight, your routine, reference circadian rhythms, and screen adjustments on one shared timeline. The interactive model below explains the idea; the actual macOS interface continues to develop.</p>
+        </div>
+        <div class="interactive-preview-frame">
+          <iframe src="demo/index.html" title="Interactive ChillScreen Daily Cycle preview" loading="eager"></iframe>
+        </div>
+        <p class="interactive-preview-note">Drag the timeline markers and curve handles to explore. This browser preview changes only the illustration; it does not alter your display.</p>
+      </section>
+
+      <figure class="cycle-window" aria-labelledby="cycle-caption">
+        <div class="cycle-topbar" aria-hidden="true">
+          <span class="traffic"><i></i><i></i><i></i></span>
+          <span class="mini-brand"><span class="mini-arc"></span>ChillScreen</span>
+          <span class="privacy-pill">Local on your Mac</span>
+        </div>
+        <svg class="cycle-scene" viewBox="0 0 1200 650" role="img" aria-label="Illustration of a day-to-night cycle with cortisol, melatonin, warmth, and dimming curves">
+          <defs>
+            <linearGradient id="sky" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#23364d"/>
+              <stop offset=".12" stop-color="#789eb8"/>
+              <stop offset=".47" stop-color="#719cba"/>
+              <stop offset=".61" stop-color="#8d7482"/>
+              <stop offset=".72" stop-color="#252441"/>
+              <stop offset=".9" stop-color="#10162f"/>
+              <stop offset="1" stop-color="#403e4f"/>
+            </linearGradient>
+            <linearGradient id="skyVertical" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#07111d" stop-opacity=".72"/>
+              <stop offset=".24" stop-color="#27465d" stop-opacity=".08"/>
+              <stop offset=".72" stop-color="#071522" stop-opacity=".28"/>
+              <stop offset="1" stop-color="#020811" stop-opacity=".98"/>
+            </linearGradient>
+            <linearGradient id="rearMountain" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#657f8e"/><stop offset="1" stop-color="#20394c"/></linearGradient>
+            <linearGradient id="nearMountain" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#314b5e"/><stop offset="1" stop-color="#071827"/></linearGradient>
+            <linearGradient id="lake" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#7796a7" stop-opacity=".58"/><stop offset=".3" stop-color="#244c64" stop-opacity=".82"/><stop offset="1" stop-color="#020b16"/></linearGradient>
+            <radialGradient id="dawn"><stop stop-color="#f6d892" stop-opacity=".68"/><stop offset=".38" stop-color="#dba675" stop-opacity=".25"/><stop offset="1" stop-color="#dba675" stop-opacity="0"/></radialGradient>
+            <radialGradient id="sunset"><stop stop-color="#f49a76" stop-opacity=".62"/><stop offset=".4" stop-color="#bd6570" stop-opacity=".22"/><stop offset="1" stop-color="#bd6570" stop-opacity="0"/></radialGradient>
+            <filter id="softGlow" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="8"/></filter>
+            <filter id="lineGlow" x="-20%" y="-40%" width="140%" height="180%"><feGaussianBlur stdDeviation="7"/></filter>
+            <filter id="smallGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="3.5"/></filter>
+            <mask id="crescent" x="-40" y="-40" width="80" height="80" maskUnits="userSpaceOnUse">
+              <rect x="-40" y="-40" width="80" height="80" fill="white"/>
+              <circle cx="11" cy="-8" r="22" fill="black"/>
+            </mask>
+          </defs>
+
+          <rect width="1200" height="650" fill="url(#sky)"/>
+          <rect width="1200" height="650" fill="url(#skyVertical)"/>
+          <ellipse cx="125" cy="260" rx="185" ry="210" fill="url(#dawn)"/>
+          <ellipse cx="742" cy="260" rx="230" ry="210" fill="url(#sunset)"/>
+          <ellipse cx="1160" cy="260" rx="150" ry="210" fill="url(#dawn)"/>
+
+          <g class="stars" fill="#d9e5ff" opacity=".45">
+            <circle cx="875" cy="80" r="1.2"/><circle cx="914" cy="126" r="1"/><circle cx="966" cy="66" r="1.4"/><circle cx="1016" cy="118" r=".9"/><circle cx="1078" cy="82" r="1.2"/><circle cx="1132" cy="142" r="1"/><circle cx="824" cy="154" r=".8"/>
+          </g>
+
+          <g class="celestial sunrise" transform="translate(118 98)">
+            <circle class="celestial-glow" cx="0" cy="0" r="26" fill="#ebcf77" opacity=".4" filter="url(#softGlow)"/>
+            <path d="M-15 4a15 15 0 0 1 30 0M-23 5h46M-16 12h32M0-20v10M-7-14 0-21l7 7" fill="none" stroke="#ead17c" stroke-width="3" stroke-linecap="round"/>
+            <text y="38">06:12</text>
+          </g>
+          <g class="celestial sun" transform="translate(405 86)">
+            <circle class="celestial-glow" r="31" fill="#f0d568" opacity=".34" filter="url(#softGlow)"/>
+            <circle r="14" fill="#ead075"/>
+            <path d="M0-27v8M0 19v8M-27 0h8M19 0h8M-19-19l6 6M13 13l6 6M-19 19l6-6M13-13l6-6" stroke="#ead075" stroke-width="3" stroke-linecap="round"/>
+          </g>
+          <g class="celestial sunset" transform="translate(742 98)">
+            <circle class="celestial-glow" r="27" fill="#ee805d" opacity=".38" filter="url(#softGlow)"/>
+            <path d="M-15 0a15 15 0 0 1 30 0M-23 1h46M-16 8h32M0-20v10M-7-15 0-8l7-7" fill="none" stroke="#ed8767" stroke-width="3" stroke-linecap="round"/>
+            <text y="38">20:34</text>
+          </g>
+          <g class="celestial moon" transform="translate(948 82)">
+            <circle class="celestial-glow" r="31" fill="#a9bbef" opacity=".28" filter="url(#softGlow)"/>
+            <circle cx="0" cy="0" r="21" fill="#c3d1ef" mask="url(#crescent)"/>
+          </g>
+
+          <path d="M0 326 52 309 88 320 127 292 160 305 202 266 242 289 282 245 322 280 365 258 410 298 454 286 506 320 556 309 608 337 662 322 716 340 770 314 820 330 872 298 918 316 966 286 1014 306 1066 276 1110 298 1153 270 1200 286V422H0Z" fill="url(#rearMountain)" opacity=".72"/>
+          <path d="M0 382 54 365 99 375 145 338 184 357 230 317 270 341 314 305 355 337 402 320 448 357 496 345 544 378 594 365 646 389 700 372 752 391 804 367 856 383 908 354 956 372 1008 344 1057 365 1108 336 1156 355 1200 342V435H0Z" fill="url(#nearMountain)" opacity=".95"/>
+          <rect x="0" y="404" width="1200" height="246" fill="url(#lake)"/>
+          <g opacity=".2" fill="none" stroke-linecap="round">
+            <path d="M30 430C190 420 332 438 496 428s318-5 468 3 174 4 216-2" stroke="#b8cfda"/>
+            <path d="M58 455c170-10 340 8 505-2s328-4 573 3" stroke="#7094a7"/>
+            <path d="M17 486c180-8 353 7 534-1s359-4 629 2" stroke="#426e85"/>
+          </g>
+          <line x1="0" y1="404" x2="1200" y2="404" stroke="#d2e0e5" stroke-opacity=".17"/>
+
+          <g class="village" fill="#061522">
+            <path d="M748 403c92-13 184-8 270 1 72 7 126 1 182-4v39H748Z" opacity=".72"/>
+            <path d="M820 407v-20l23-15 23 15v20m30 4v-27l31-20 31 20v27m41 2v-21l24-16 24 16v21m45 4v-31l35-23 35 23v31"/>
+          </g>
+          <g fill="#efb369" opacity=".78" filter="url(#smallGlow)">
+            <rect x="832" y="390" width="5" height="7" rx="1"/><rect x="849" y="390" width="5" height="7" rx="1"/>
+            <rect x="910" y="391" width="6" height="8" rx="1"/><rect x="935" y="391" width="6" height="8" rx="1"/>
+            <rect x="997" y="396" width="5" height="7" rx="1"/><rect x="1017" y="396" width="5" height="7" rx="1"/>
+            <rect x="1108" y="393" width="6" height="9" rx="1"/><rect x="1137" y="393" width="6" height="9" rx="1"/>
+          </g>
+
+          <g class="curves" fill="none" stroke-linecap="round">
+            <path class="glow cortisol" d="M35 492C118 486 171 430 224 317C249 266 282 250 323 254C454 266 604 352 759 422C902 486 1036 493 1170 456"/>
+            <path class="glow melatonin" d="M35 474C97 474 153 476 218 488C322 506 628 507 742 494C814 486 849 437 891 365C944 275 1020 246 1087 267C1151 287 1174 386 1200 464"/>
+            <path class="glow warmth" d="M35 498C438 498 594 499 728 489C782 485 822 439 862 390C905 337 986 325 1051 344C1116 363 1157 421 1200 485"/>
+            <path class="glow dimming" d="M35 500C458 500 651 500 745 496C813 493 849 460 886 424C934 378 1002 372 1065 393C1129 414 1164 456 1200 490"/>
+            <path class="core cortisol" d="M35 492C118 486 171 430 224 317C249 266 282 250 323 254C454 266 604 352 759 422C902 486 1036 493 1170 456"/>
+            <path class="core melatonin" d="M35 474C97 474 153 476 218 488C322 506 628 507 742 494C814 486 849 437 891 365C944 275 1020 246 1087 267C1151 287 1174 386 1200 464"/>
+            <path class="core warmth" d="M35 498C438 498 594 499 728 489C782 485 822 439 862 390C905 337 986 325 1051 344C1116 363 1157 421 1200 485"/>
+            <path class="core dimming" d="M35 500C458 500 651 500 745 496C813 493 849 460 886 424C934 378 1002 372 1065 393C1129 414 1164 456 1200 490"/>
+          </g>
+
+          <g class="timeline" transform="translate(0 565)">
+            <path d="M46 0H1154"/>
+            <g><circle cx="82"/><circle cx="254"/><circle cx="427"/><circle cx="600"/><circle cx="773"/><circle cx="946"/><circle cx="1118"/></g>
+            <text x="82" y="31">06</text><text x="254" y="31">10</text><text x="427" y="31">14</text><text x="600" y="31">18</text><text x="773" y="31">22</text><text x="946" y="31">02</text><text x="1118" y="31">06</text>
+          </g>
+        </svg>
+        <figcaption id="cycle-caption">
+          <span><i class="dot cortisol"></i>Cortisol</span>
+          <span><i class="dot melatonin"></i>Melatonin</span>
+          <span><i class="dot warmth"></i>Warmth</span>
+          <span><i class="dot dimming"></i>Dimming</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <section class="detail-grid">
+      <div class="detail-copy">
+        <p class="eyebrow">Useful, but optional</p>
+        <h2>Room light and personal preference stay visible.</h2>
+        <p>Ambient Light shows the sensor readings it uses and lets you calibrate how much they can influence the screen.</p>
+        <p>Learning keeps a local history you can inspect, undo, tune, or reset.</p>
+        <ul>
+          <li>No account or cloud synchronization</li>
+          <li>No screen capture or content analysis</li>
+          <li>No hidden feature gate</li>
+        </ul>
+        <a class="text-link" href="user-guide/">Explore the complete User Guide <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="detail-visuals">
+        <section class="feature-rail" aria-label="Core features">
+          <article><span>01</span><h2>Automatic</h2><p>Uses your schedule and optional local sunrise and sunset.</p></article>
+          <article><span>02</span><h2>Ambient Light</h2><p>Can respond to the room using thresholds you calibrate yourself.</p></article>
+          <article><span>03</span><h2>Learning</h2><p>Uses your evening adjustments to shape future Automatic evenings.</p></article>
+          <article><span>04</span><h2>Manual</h2><p>Keeps direct control close whenever you want it.</p></article>
+        </section>
+        <div class="detail-images">
+          <figure><img src="assets/chillscreen-ambient-light.png" alt="Ambient Light settings in ChillScreen" width="821" height="639" loading="lazy"><figcaption>Ambient Light</figcaption></figure>
+          <figure><img src="assets/chillscreen-learning.png" alt="Learning History settings in ChillScreen" width="821" height="640" loading="lazy"><figcaption>Learning History</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-strip">
+      <blockquote>“I've had some trouble with sleep for a long time, and one thing I wanted to control better was my exposure to bright and blue light in the evening.”</blockquote>
+      <a href="story/">Read why ChillScreen exists <span aria-hidden="true">→</span></a>
+    </section>
+
+    <section class="download-section" id="download">
+      <div>
+        <p class="eyebrow">Private by default</p>
+        <h2>Your evening stays on your Mac.</h2>
+        <p>Every feature remains available. After two weeks you may choose what ChillScreen is worth to you — including €0.</p>
+      </div>
+      <div class="download-card">
+        <img src="assets/chillscreen-icon.png" alt="" width="74" height="74">
+        <div><strong>ChillScreen 1.1.0</strong><span>macOS 14 Sonoma or later</span></div>
+        <a class="button button-primary" href="https://github.com/EJeer/ChillScreen/releases/download/v1.1.0/ChillScreen-1.1.0.dmg">Download DMG</a>
+        <a class="checksum" href="https://github.com/EJeer/ChillScreen/releases/download/v1.1.0/ChillScreen-1.1.0.dmg.sha256">SHA-256 checksum</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-brand"><img src="assets/chillscreen-icon.png" alt="" width="32" height="32"><span>ChillScreen</span></div>
+    <div class="footer-links">
+      <a href="https://github.com/EJeer/ChillScreen">GitHub</a>
+      <a href="privacy/">Privacy</a>
+      <a href="https://github.com/EJeer/ChillScreen/blob/main/docs/terms-of-use.md">Terms</a>
+      <a href="https://buymeacoffee.com/chillscreen">Buy me a coffee</a>
+    </div>
+    <p>© EJeer</p>
+  </footer>
+</body>
+</html>

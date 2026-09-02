@@ -3,6 +3,10 @@
 ChillScreen is a macOS menu-bar app that gradually adjusts display warmth and
 brightness around your daily rhythm.
 
+[Website](https://ejeer.github.io/ChillScreen/) ·
+[User Guide](https://ejeer.github.io/ChillScreen/user-guide/) ·
+[Release Notes](https://ejeer.github.io/ChillScreen/releases/1.1.0/)
+
 Every feature remains available. Nothing expires or becomes locked.
 
 It offers:
@@ -28,8 +32,8 @@ ChillScreen 1.1 adds room-light adaptation, transparent local Learning, deeper
 Warmth and Dimming calibration, and substantial reliability and performance
 work.
 
-- [Read what is new in 1.1](docs/releases/1.1.0.md)
-- [Open the complete User Guide](docs/user-guide.md)
+- [Read what is new in 1.1](https://ejeer.github.io/ChillScreen/releases/1.1.0/)
+- [Open the complete User Guide](https://ejeer.github.io/ChillScreen/user-guide/)
 
 ## Requirements
 
@@ -65,7 +69,7 @@ shasum -a 256 -c ChillScreen-1.1.0.dmg.sha256
 
 ChillScreen does not capture or analyze screen contents. Learning, location,
 schedule, and ambient-light preferences are stored locally. See
-[Privacy](docs/privacy.md) for details.
+[Privacy](https://ejeer.github.io/ChillScreen/privacy/) for details.
 
 ## Pay what you think it is worth
 
@@ -94,7 +98,7 @@ See the plain-language [Terms of Use](docs/terms-of-use.md).
 
 ## The story
 
-[Why I built ChillScreen](docs/story.md)
+[Why I built ChillScreen](https://ejeer.github.io/ChillScreen/story/)
 
 ## Distribution
 

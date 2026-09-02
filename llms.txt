@@ -1,0 +1,38 @@
+# ChillScreen
+
+ChillScreen is a macOS menu-bar application that gradually adjusts display warmth and dimming around a user's schedule, optional local sunrise and sunset, and optional ambient-light readings. The application works locally on the Mac and does not capture or analyze screen contents.
+
+## Primary pages
+
+- Home and download: https://ejeer.github.io/ChillScreen/
+- User guide: https://ejeer.github.io/ChillScreen/user-guide/
+- Project story: https://ejeer.github.io/ChillScreen/story/
+- Privacy: https://ejeer.github.io/ChillScreen/privacy/
+- Release notes for 1.1.0: https://ejeer.github.io/ChillScreen/releases/1.1.0/
+- Terms of Use: https://github.com/EJeer/ChillScreen/blob/main/docs/terms-of-use.md
+- GitHub repository: https://github.com/EJeer/ChillScreen
+
+## Current release
+
+- Version: 1.1.0
+- Requirement: macOS 14 Sonoma or later
+- Download: https://github.com/EJeer/ChillScreen/releases/download/v1.1.0/ChillScreen-1.1.0.dmg
+- SHA-256 checksum: https://github.com/EJeer/ChillScreen/releases/download/v1.1.0/ChillScreen-1.1.0.dmg.sha256
+
+## Features
+
+- Automatic daily cycle based on schedule and optional local sunlight.
+- Independent Warmth and Dimming effects.
+- Manual control and temporary maximum preview.
+- Optional Ambient Light adaptation with user calibration.
+- Optional local Learning from evening adjustments.
+- Multiple-display support and local-only preferences.
+- No account, in-app analytics, advertising, screen capture, or cloud synchronization.
+
+## Availability
+
+Personal use, nonprofit organizations, and government educational organizations may use the complete application for free. After two weeks, users may choose what it is worth, including EUR 0. No features are locked. Commercial organizations that deploy or manage ChillScreen for employees require a separate corporate license.
+
+## Important scope
+
+ChillScreen is not open-source software. The public repository contains releases and documentation, not the application source code. The circadian curves are normalized, research-informed reference profiles, not measurements of an individual user's hormone levels.

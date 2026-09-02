@@ -1,0 +1,1650 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, follow">
+  <title>ChillScreen — Daily Cycle</title>
+  <style>
+    :root{color-scheme:dark;--text:#edf2f6;--muted:#91a0ad;--green:#8fce78;--purple:#a677f5;--orange:#f27b55;--blue:#5c9ef4;--sun:#e5cd77;--moon:#bacbed}
+    *{box-sizing:border-box}
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;background:#01060c;color:var(--text)}
+    body{display:grid;place-items:center;padding:16px;background:radial-gradient(ellipse 76% 70% at 50% -10%,rgba(45,76,104,.17),transparent 72%),#01060c}
+    button{font:inherit}
+    .window{position:relative;width:min(1480px,calc(100vw - 32px),calc((100vh - 32px)*2.08));aspect-ratio:2.08;overflow:hidden;transform:scale(.6667);border:1px solid rgba(112,153,182,.34);border-radius:clamp(17px,1.35vw,24px);background:#02070d;box-shadow:0 28px 90px rgba(0,0,0,.62),inset 0 1px rgba(255,255,255,.04)}
+    .titlebar{display:none}
+    .traffic{flex:0 0 auto;display:flex;gap:9px}.traffic i{width:14px;aspect-ratio:1;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+    .traffic i:nth-child(1){background:#ef6a57}.traffic i:nth-child(2){background:#efbb58}.traffic i:nth-child(3){background:#70b96c}
+    .surface{position:absolute;inset:0;overflow:hidden;border-radius:inherit;background:#02070d;box-shadow:inset 0 1px rgba(255,255,255,.035)}
+    .toolbar{position:relative;z-index:10;height:9%;min-height:50px;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;padding:0 1.55%;border-bottom:1px solid rgba(130,157,178,.1);background:rgba(1,6,12,.97);backdrop-filter:blur(18px)}
+    .toolbar-left{min-width:0;display:flex;align-items:center;gap:clamp(16px,1.5vw,24px)}
+    .brand{min-width:0;display:inline-flex;align-items:center;gap:clamp(6px,.52vw,9px);color:#eee7dc;font-family:"Avenir Next","SF Pro Rounded",-apple-system,BlinkMacSystemFont,sans-serif;font-size:clamp(13px,1vw,17px);font-weight:540;letter-spacing:-.025em;white-space:nowrap}
+    .brand-mark{flex:0 0 auto;width:clamp(26px,2.15vw,35px);aspect-ratio:585/235;display:block}
+    .brand-mark img{display:block;width:100%;height:100%;object-fit:contain;-webkit-user-drag:none;user-select:none;pointer-events:none}.brand-name{overflow:hidden;text-overflow:ellipsis}
+    .chart-legend,.legend-item{display:flex;align-items:center}.chart-legend{justify-self:center;gap:clamp(8px,.8vw,13px);color:rgba(220,227,232,.7);font-size:clamp(12px,.9vw,15px);white-space:nowrap}.legend-item{position:relative;gap:6px;padding:5px 3px;border:0;background:none;font:inherit;cursor:help}.legend-dot{width:9px;height:9px;border-radius:50%;background:currentColor;box-shadow:0 0 9px color-mix(in srgb,currentColor 48%,transparent)}.legend-item.cortisol{color:var(--green)}.legend-item.melatonin{color:var(--purple)}.legend-item.warmth{color:var(--orange)}.legend-item.dimming{color:var(--blue)}.legend-label{color:rgba(220,227,232,.78)}.legend-tooltip{position:absolute;z-index:30;top:calc(100% + 11px);left:50%;width:clamp(310px,28vw,420px);padding:14px 16px;border:1px solid rgba(134,164,187,.24);border-radius:11px;background:rgba(4,12,22,.95);box-shadow:0 12px 34px rgba(0,0,0,.42);color:rgba(235,240,244,.94);font-size:clamp(14px,1vw,17px);font-weight:430;line-height:1.45;letter-spacing:0;text-align:left;white-space:normal;opacity:0;visibility:hidden;transform:translate(-50%,-4px);transition:opacity .14s ease,transform .14s ease,visibility .14s;pointer-events:none;backdrop-filter:blur(18px)}.legend-item:hover .legend-tooltip,.legend-item:focus-visible .legend-tooltip{opacity:1;visibility:visible;transform:translate(-50%,0)}.legend-item:focus-visible{outline:1px solid rgba(155,190,216,.45);outline-offset:2px;border-radius:6px}
+    .status{justify-self:end;display:flex;align-items:center;gap:clamp(7px,.75vw,11px);color:rgba(218,227,233,.74);font-size:clamp(12px,.9vw,15px);white-space:nowrap}.status-item{min-height:clamp(28px,2.2vw,36px);display:inline-flex;align-items:center;gap:7px;padding:0 clamp(8px,.75vw,12px);border:1px solid rgba(135,168,193,.18);border-radius:999px;background:rgba(3,12,23,.38)}.status-item svg{width:clamp(12px,.95vw,15px);fill:currentColor}.help-wrap{position:relative;display:flex}.help-button{width:clamp(30px,2.3vw,38px);height:clamp(30px,2.3vw,38px);padding:0;border:1px solid rgba(135,168,193,.22);border-radius:50%;background:rgba(3,12,23,.42);color:rgba(225,233,238,.86);font-size:clamp(20px,1.35vw,23px);font-weight:650;cursor:help}.help-button:hover,.help-button:focus-visible,.help-wrap.is-open .help-button{border-color:rgba(159,193,217,.5);background:rgba(22,42,60,.7);color:#f4f7f9;outline:none}.science-popover{position:absolute;z-index:60;top:calc(100% + 12px);right:0;width:clamp(500px,42vw,650px);max-height:min(72vh,590px);padding:22px;border:1px solid rgba(130,164,189,.28);border-radius:16px;background:rgba(3,11,20,.97);box-shadow:0 22px 64px rgba(0,0,0,.58);color:rgba(228,235,240,.86);font-size:18px;line-height:1.5;white-space:normal;overflow:auto;opacity:0;visibility:hidden;transform:translateY(-5px);transition:opacity .14s ease,transform .14s ease,visibility .14s;backdrop-filter:blur(22px)}.help-wrap:hover .science-popover,.help-wrap:focus-within .science-popover,.help-wrap.is-open .science-popover{opacity:1;visibility:visible;transform:translateY(0)}.science-popover h2{margin:0 0 12px;color:#f2f5f7;font-size:24px;line-height:1.2}.science-popover p{margin:0 0 12px}.research-toggle{margin-top:5px;padding:9px 13px;border:1px solid rgba(133,169,196,.28);border-radius:9px;background:rgba(28,51,72,.58);color:#eaf1f5;font-size:16px;font-weight:600;cursor:pointer}.research-toggle:hover,.research-toggle:focus-visible{border-color:rgba(151,193,224,.56);background:rgba(39,69,94,.72);outline:none}.research-list{margin:18px 0 0;padding-left:24px;white-space:normal}.research-list li{margin:0 0 13px;padding-left:4px}.research-list a{color:#90c6f1;text-decoration:none}.research-list a:hover,.research-list a:focus-visible{text-decoration:underline;outline:none}.research-list[hidden]{display:none}.support-block{margin-top:18px;padding-top:16px;border-top:1px solid rgba(133,169,196,.18)}.support-block[hidden]{display:none}.support-block h3{margin:0 0 6px;color:#f2f5f7;font-size:18px}.support-block p{color:rgba(218,227,233,.72)}.support-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}.support-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:0 12px;border:1px solid rgba(133,169,196,.28);border-radius:9px;background:rgba(28,51,72,.58);color:#eaf1f5;text-decoration:none;font-size:15px;font-weight:650}.support-action img{width:18px;height:18px;border-radius:4px;object-fit:cover}.support-action:hover,.support-action:focus-visible{border-color:rgba(151,193,224,.56);background:rgba(39,69,94,.72);outline:none}.support-action[hidden]{display:none}
+    .chart{--dawn-x:4.5%;--sunrise-x:7.5%;--day-mid-x:35%;--sunset-x:62%;--dusk-x:65%;--moon-x:79%;--next-dawn-x:93%;--next-sunrise-x:96%;position:relative;height:91%;isolation:isolate;background:#01060c;overflow:hidden}
+    .atmosphere,.atmosphere:before,.atmosphere:after,.depth-vignette{position:absolute;inset:0;content:"";pointer-events:none}
+    .atmosphere{z-index:0;inset:-3%;background:radial-gradient(ellipse 15% 82% at var(--sunrise-x) 42%,rgba(224,190,113,.24),rgba(157,132,84,.09) 45%,transparent 82%),radial-gradient(ellipse 15% 88% at calc(var(--sunset-x) - 1%) 43%,rgba(205,120,102,.2),rgba(130,72,82,.085) 48%,transparent 84%),radial-gradient(ellipse 15% 82% at var(--next-sunrise-x) 42%,rgba(224,190,113,.24),rgba(157,132,84,.09) 45%,transparent 82%),radial-gradient(ellipse 44% 112% at var(--day-mid-x) 42%,rgba(88,143,183,.38),rgba(63,112,151,.21) 58%,transparent 94%),radial-gradient(ellipse 24% 112% at var(--moon-x) 42%,rgba(31,29,78,.34),rgba(12,17,47,.28) 67%,transparent 100%),linear-gradient(90deg,#0b1228 0%,#101832 var(--dawn-x),#40596d var(--sunrise-x),#5b89aa calc(var(--sunrise-x) + 5%),#6394b7 calc(var(--sunrise-x) + 8%),#6394b7 calc(var(--sunset-x) - 3%),#5d7990 var(--sunset-x),#44384f var(--dusk-x),#171936 calc(var(--dusk-x) + 3%),#0f1533 var(--next-dawn-x),#40596d var(--next-sunrise-x),#5b89aa calc(var(--next-sunrise-x) + 5%))}
+    .atmosphere:before{background:radial-gradient(ellipse 14% 70% at calc(var(--sunrise-x) + 1%) 49%,rgba(232,201,137,.15),transparent 80%),radial-gradient(ellipse 14% 74% at calc(var(--sunset-x) - 1.5%) 48%,rgba(214,134,111,.14),transparent 82%),radial-gradient(ellipse 14% 70% at calc(var(--next-sunrise-x) + 1%) 49%,rgba(232,201,137,.15),transparent 80%)}
+    .atmosphere:after{background:linear-gradient(180deg,rgba(1,6,12,.96) 0%,rgba(1,6,12,.62) 8%,rgba(1,6,12,.06) 25%,transparent 42%,rgba(1,7,15,.12) 56%,rgba(1,7,15,.62) 82%,#01060c 100%)}
+    .atmosphere[data-solar-condition="polarDay"]{background:radial-gradient(ellipse 62% 118% at 50% 43%,rgba(94,153,198,.58),rgba(66,119,164,.4) 58%,transparent 94%),linear-gradient(90deg,#3d668b,#5689b0 50%,#3d668b)}.atmosphere[data-solar-condition="polarNight"]{background:radial-gradient(ellipse 54% 115% at 50% 43%,rgba(35,32,88,.7),transparent 86%),linear-gradient(90deg,#0c142e,#15173e 50%,#0c142e)}.atmosphere[data-solar-condition^="polar"]:before{opacity:0}
+    .landscape{position:absolute;z-index:1;inset:0;width:100%;height:100%;pointer-events:none;opacity:.98}
+    .landscape .terrain-light,.landscape .water-light{mix-blend-mode:screen}.landscape .village-lighting{mix-blend-mode:normal}
+    .landscape .water-ripples{fill:none;stroke-linecap:round;vector-effect:non-scaling-stroke}
+    .landscape .village-window{fill:#f7c46c}.landscape .village-window-glow{fill:#f0a45f;opacity:.12}
+    .depth-vignette{z-index:3;background:radial-gradient(ellipse 94% 70% at 50% 44%,transparent 55%,rgba(0,4,10,.28) 100%),linear-gradient(180deg,#01060c 0%,rgba(1,6,12,.62) 7%,transparent 22%,transparent 76%,rgba(1,6,13,.22) 88%,#01060c 100%)}
+    .mode-dock{position:absolute;z-index:8;top:-1px;left:0;right:0;width:max-content;margin-inline:auto;display:flex;align-items:center;gap:5px;padding:4px 5px 5px;border:1px solid rgba(130,161,184,.23);border-radius:0 0 13px 13px;background:rgba(4,13,24,.75);box-shadow:0 10px 25px rgba(0,0,0,.25),inset 0 1px rgba(255,255,255,.04);backdrop-filter:blur(18px)}
+    .mode{display:grid;grid-template-columns:1fr 1fr;width:174px;padding:2px;border:1px solid rgba(129,165,190,.17);border-radius:9px;background:rgba(18,34,51,.42)}.mode button{height:30px;padding:0 11px;border:0;border-radius:7px;background:transparent;color:rgba(225,233,238,.72);font-size:13px;font-weight:540;cursor:pointer}.mode button.active{color:#f5f7f9;background:linear-gradient(180deg,rgba(63,84,109,.9),rgba(38,54,74,.94));box-shadow:inset 0 1px rgba(255,255,255,.08),0 3px 9px rgba(0,0,0,.22)}
+    .dock-toggle{display:flex;align-items:center;gap:6px;height:34px;min-height:34px;padding:0 9px 0 8px;border:1px solid rgba(140,171,194,.2);border-radius:9px;background:rgba(8,20,34,.46);color:rgba(227,234,239,.76);font-size:13px;font-weight:560;cursor:pointer;white-space:nowrap}.dock-toggle:hover,.dock-toggle:focus-visible{border-color:rgba(158,193,220,.48);color:#f3f6f8;outline:none}.switch-track{position:relative;width:25px;height:14px;border-radius:999px;background:rgba(129,151,169,.3);box-shadow:inset 0 0 0 1px rgba(178,198,213,.12)}.switch-thumb{position:absolute;top:3px;left:3px;width:8px;height:8px;border-radius:50%;background:#d8e1e8;box-shadow:0 1px 4px rgba(0,0,0,.38);transition:transform .25s cubic-bezier(.2,.8,.2,1)}.dock-toggle[aria-checked="true"]{border-color:rgba(113,169,220,.42);background:rgba(33,78,119,.35);color:#f5f8fb}.dock-toggle[aria-checked="true"] .switch-track{background:#4f91cc}.dock-toggle[aria-checked="true"] .switch-thumb{transform:translateX(11px);background:#fff}.dock-toggle:disabled{cursor:default;opacity:.68}.dock-toggle:disabled:hover{border-color:rgba(140,171,194,.2);color:rgba(227,234,239,.76)}
+    #cycle{position:absolute;z-index:4;inset:0;width:100%;height:100%;overflow:visible;-webkit-user-select:none;user-select:none}
+    .guide{stroke:currentColor;stroke-width:1;stroke-dasharray:2 7;opacity:.3;vector-effect:non-scaling-stroke}.curve-bloom,.curve-halo,.curve-core{fill:none;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}.curve-bloom{stroke-width:18;opacity:.055}.curve-halo{stroke-width:8;opacity:.16}.curve-core{stroke-width:3;opacity:.88}.cortisol{stroke:var(--green)}.melatonin{stroke:var(--purple)}.warmth{stroke:var(--orange)}.dimming{stroke:var(--blue)}
+    .celestial{opacity:.73;pointer-events:none}.celestial .glow{fill:currentColor;opacity:.075}.celestial .fill{fill:currentColor;opacity:.86}.celestial .stroke{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}.celestial .solar-time{fill:rgba(235,240,244,.8);font-size:16px;font-weight:570;text-anchor:middle}.celestial .solar-guide{stroke:currentColor;stroke-width:1.05;stroke-dasharray:3 7;opacity:.48;vector-effect:non-scaling-stroke}.sun-tone{color:var(--sun)}.moon-tone{color:var(--moon)}.sunset-tone{color:#e88b69}
+    .current-time{pointer-events:none;color:#dfe8ee}.current-time line{stroke:currentColor;stroke-width:1.05;stroke-dasharray:4 8;opacity:.44;vector-effect:non-scaling-stroke}.current-time rect{fill:rgba(3,12,22,.74);stroke:rgba(169,193,209,.2);stroke-width:1;vector-effect:non-scaling-stroke}.current-time text{fill:rgba(239,244,247,.9);font-size:16px;font-weight:620;text-anchor:middle;font-variant-numeric:tabular-nums}
+    .timeline{stroke:rgba(193,208,218,.5);stroke-width:1.15;vector-effect:non-scaling-stroke}.tick{fill:rgba(193,207,217,.5)}.hour{fill:rgba(224,231,236,.8);font-size:19px;font-weight:520;text-anchor:middle}.hour text{transition:opacity .12s ease}.hour text.is-occluded{opacity:0}.day-note{fill:rgba(174,188,198,.52);font-size:14px;text-anchor:middle}
+    .marker{cursor:ew-resize;outline:none;touch-action:none}.marker .halo{fill:currentColor;opacity:.07;transition:opacity .14s ease}.marker .ring{fill:rgba(5,17,31,.9);stroke:currentColor;stroke-width:1.7;vector-effect:non-scaling-stroke}.marker .stem{stroke:currentColor;stroke-width:1.25;opacity:.6;vector-effect:non-scaling-stroke}.marker .dot{fill:currentColor}.marker .icon{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}.marker .event-time{fill:rgba(242,246,248,.94);font-size:18px;font-weight:590;text-anchor:middle}.marker .event-name{fill:currentColor;font-size:17px;font-weight:600;text-anchor:middle}.marker:hover .halo,.marker:focus .halo,.marker.is-active .halo{opacity:.17}.marker:focus .ring,.marker.is-active .ring{stroke-width:2.5}.marker-tooltip{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .12s ease,visibility .12s}.marker:hover .marker-tooltip,.marker:focus-visible .marker-tooltip,.marker.is-active .marker-tooltip{opacity:1;visibility:visible}.marker-tooltip rect{fill:rgba(4,12,22,.94);stroke:currentColor;stroke-opacity:.32;stroke-width:1;vector-effect:non-scaling-stroke}.marker-tooltip text{fill:#f3f6f8;font-size:16px;font-weight:510;letter-spacing:0}.wake{color:var(--green)}.evening{color:var(--orange)}.bedtime{color:var(--purple)}
+    .curve-handle{cursor:grab;outline:none;touch-action:none}.curve-handle.warmth{color:var(--orange)}.curve-handle.dimming{color:var(--blue)}.curve-handle .aura{fill:currentColor;opacity:.075}.curve-handle .outer{fill:rgba(4,12,22,.94);stroke:currentColor;stroke-width:2;vector-effect:non-scaling-stroke}.curve-handle .inner{fill:currentColor}.curve-handle:hover .aura,.curve-handle:focus .aura,.curve-handle.is-active .aura{opacity:.18}.curve-handle.is-active{cursor:grabbing}.effect-card{pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s ease,visibility .12s}.curve-handle:hover .effect-card,.curve-handle:focus-visible .effect-card,.curve-handle.is-active .effect-card{opacity:1;visibility:visible}.effect-card rect{fill:rgba(10,17,29,.92);stroke:currentColor;stroke-opacity:.3;stroke-width:1;vector-effect:non-scaling-stroke}.effect-card .card-title{fill:currentColor;font-size:18px;font-weight:650}.effect-card .card-key{fill:rgba(215,224,231,.76);font-size:15px;font-weight:530}.effect-card .card-value{fill:#f7fafc!important;font-size:16px;font-weight:650;text-anchor:end;font-variant-numeric:tabular-nums}.handle-label{opacity:0;pointer-events:none}.automatic-mode .marker,.automatic-mode .curve-handle{pointer-events:none;cursor:default}.automatic-mode .curve-handle .aura{opacity:.04}.automatic-mode .marker .halo{opacity:.045}
+    .screen-preview{position:fixed;z-index:999;inset:0;pointer-events:none;opacity:0;transition:opacity .4s ease;background:transparent}.screen-preview.is-active{opacity:1}
+    body.native-host{display:block;padding:0;background:#01060c;-webkit-user-select:none;user-select:none}body.native-host .window{width:100%;height:100%;aspect-ratio:auto;transform:none;border:0;border-radius:0;box-shadow:none}body.native-host .titlebar{display:none}body.native-host .surface{inset:0;border:0;border-radius:0}body.native-host .toolbar{height:30px;min-height:30px;padding:0 12px;background:rgba(1,6,12,.98)}body.native-host .toolbar-left{grid-column:1;padding-left:64px}body.native-host .status{grid-column:3;justify-self:end}body.native-host .traffic{display:none}body.native-host .brand{font-size:14px;font-weight:560}body.native-host .brand-mark{width:45px}body.native-host .chart{height:calc(100% - 30px)}
+    body.native-host .curve-bloom{stroke-width:14;opacity:.12}body.native-host .curve-halo{stroke-width:5.2;opacity:.24}body.native-host .curve-core{stroke-width:2.05;opacity:.9}
+    body.native-host .celestial{opacity:.9}body.native-host .celestial .glow{opacity:.1}body.native-host .celestial .fill,body.native-host .celestial .stroke{filter:none}
+    body.native-host .brand{gap:7px;font-size:14px;font-weight:500;line-height:1;letter-spacing:-.01em}body.native-host .brand-mark{width:45px}body.native-host .brand-mark img{height:auto}body.native-host .status{transform:translateY(7px)}body.native-host .mode-dock{z-index:14;top:0;gap:3px;padding:2px 4px 3px;border-radius:0 0 11px 11px;background:rgba(4,13,24,.94);backdrop-filter:none}body.native-host .mode{width:146px;border-radius:8px}body.native-host .mode button{height:24px;padding:0 8px;border-radius:6px;font-size:11.5px}body.native-host .dock-toggle{height:28px;min-height:28px;gap:5px;padding:0 7px;border-radius:8px;font-size:11.5px}body.native-host .switch-track{width:22px;height:12px}body.native-host .switch-thumb{top:2.5px;left:2.5px;width:7px;height:7px}body.native-host .dock-toggle[aria-checked="true"] .switch-thumb{transform:translateX(10px)}body.native-host .chart-legend{position:absolute;z-index:12;top:36px;left:50%;transform:translateX(-50%)}body.native-host .help-button{width:24px;height:24px;font-size:16px}body.native-host .science-popover{width:460px;max-height:320px;padding:16px;border-radius:13px;font-size:14px;line-height:1.42}body.native-host .science-popover h2{margin-bottom:9px;font-size:20px}body.native-host .science-popover p{margin-bottom:9px}body.native-host .research-toggle{padding:7px 10px;font-size:14px}body.native-host .research-list{margin-top:13px;padding-left:20px}body.native-host .research-list li{margin-bottom:9px}
+    #cycle .effect-card .card-key{fill:#d7dfe5!important;color:#d7dfe5!important}#cycle .effect-card .card-value{fill:#f8fafc!important;color:#f8fafc!important}
+    .learning-onboarding{position:absolute;z-index:40;top:52px;left:50%;width:390px;padding:18px 19px 17px;border:1px solid rgba(126,171,204,.32);border-radius:16px;background:linear-gradient(180deg,rgba(10,24,39,.97),rgba(4,13,24,.98));box-shadow:0 22px 58px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.05);color:rgba(225,233,239,.82);font-size:15px;line-height:1.42;opacity:0;visibility:hidden;transform:translate(-50%,-7px);transition:opacity .18s ease,transform .18s ease,visibility .18s;backdrop-filter:blur(22px)}.learning-onboarding.is-open{opacity:1;visibility:visible;transform:translate(-50%,0)}.learning-onboarding h2{display:flex;align-items:center;gap:9px;margin:0 0 8px;color:#f2f6f8;font-size:20px;line-height:1.2}.learning-onboarding h2:before{content:"";width:9px;height:9px;border-radius:50%;background:#77b4e5;box-shadow:0 0 15px rgba(92,158,244,.8)}.learning-onboarding p{margin:0 0 15px}.learning-actions{display:flex;justify-content:flex-end;gap:8px}.learning-actions button{height:32px;padding:0 13px;border:1px solid rgba(134,170,196,.24);border-radius:8px;background:rgba(19,38,55,.64);color:rgba(230,237,241,.82);font-size:14px;font-weight:590;cursor:pointer}.learning-actions button.primary{border-color:rgba(111,168,211,.5);background:linear-gradient(180deg,rgba(68,105,139,.95),rgba(39,68,94,.98));color:#fff}.learning-actions button:hover,.learning-actions button:focus-visible{border-color:rgba(149,192,223,.58);outline:none}
+    .learning-toast{position:absolute;z-index:35;left:50%;bottom:24px;display:flex;align-items:center;gap:10px;min-height:38px;padding:0 10px 0 14px;border:1px solid rgba(126,171,204,.27);border-radius:999px;background:rgba(4,14,25,.94);box-shadow:0 12px 34px rgba(0,0,0,.38);color:rgba(230,237,241,.88);font-size:14px;font-weight:570;opacity:0;visibility:hidden;transform:translate(-50%,7px);transition:opacity .18s ease,transform .18s ease,visibility .18s;backdrop-filter:blur(16px)}.learning-toast.is-visible{opacity:1;visibility:visible;transform:translate(-50%,0)}.learning-toast i{width:8px;height:8px;border-radius:50%;background:#77b4e5;box-shadow:0 0 12px rgba(92,158,244,.8)}.learning-toast button{height:28px;padding:0 9px;border:0;border-radius:7px;background:rgba(79,123,161,.23);color:#9dcbef;font-size:13px;font-weight:650;cursor:pointer}.learning-toast button:hover,.learning-toast button:focus-visible{background:rgba(79,123,161,.4);color:#dceefa;outline:none}
+    .learning-toggle{position:relative}.learning-period-tooltip{position:absolute;z-index:50;top:calc(100% + 10px);left:0;width:310px;padding:10px 12px;border:1px solid rgba(126,171,204,.3);border-radius:10px;background:rgba(4,13,24,.96);box-shadow:0 13px 34px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.04);color:rgba(207,218,226,.78);font-size:13px;font-weight:500;line-height:1.35;text-align:left;white-space:normal;opacity:0;visibility:hidden;transition:opacity .14s ease,visibility .14s;pointer-events:none;backdrop-filter:blur(16px)}.learning-period-tooltip strong,.learning-period-tooltip span{display:block}.learning-period-tooltip strong{color:#f2f6f8;font-weight:620}.learning-period-tooltip span{margin-top:3px}.learning-toggle:hover .learning-period-tooltip,.learning-toggle:focus-visible .learning-period-tooltip{opacity:1;visibility:visible}
+    .status{gap:0}.status-chips{display:flex;align-items:center;gap:clamp(7px,.75vw,11px);margin-right:clamp(7px,.75vw,11px)}.dock-toggle{position:relative}.dock-toggle.is-disabled{cursor:default;opacity:.5}.dock-toggle.is-disabled:hover{border-color:rgba(140,171,194,.2);color:rgba(227,234,239,.76)}.control-tooltip{position:absolute;z-index:55;top:calc(100% + 10px);left:0;width:250px;padding:9px 11px;border:1px solid rgba(126,171,204,.3);border-radius:9px;background:rgba(4,13,24,.97);box-shadow:0 13px 34px rgba(0,0,0,.42);color:rgba(224,232,237,.88);font-size:12.5px;font-weight:500;line-height:1.35;text-align:left;white-space:normal;opacity:0;visibility:hidden;transition:opacity .14s ease,visibility .14s;pointer-events:none}.dock-toggle:hover .control-tooltip,.dock-toggle:focus-visible .control-tooltip,.mode button:hover .control-tooltip,.mode button:focus-visible .control-tooltip{opacity:1;visibility:visible}.mode button{position:relative}.mode button .control-tooltip{left:50%;margin-left:-125px}.ambient-reading{position:absolute;top:calc(100% + 7px);left:5px;color:rgba(188,205,216,.7);font-size:11.5px;font-weight:560;font-variant-numeric:tabular-nums;white-space:nowrap;pointer-events:none}
+    body.native-host .status{transform:none}body.native-host .status-chips{position:absolute;z-index:12;top:36px;right:43px;margin:0}body.native-host .ambient-reading{top:35px;left:4px;font-size:11px}
+    body.learning-available.automatic-mode .learning-toggle{opacity:1;cursor:pointer}body.learning-enabled.automatic-mode .learning-toggle{border-color:rgba(113,169,220,.45);background:rgba(33,78,119,.38);color:#f5f8fb}body.learning-enabled.automatic-mode .learning-toggle .switch-track{background:#4f91cc}body.learning-enabled.automatic-mode .learning-toggle .switch-thumb{transform:translateX(11px);background:#fff}
+    .automatic-mode .marker{pointer-events:auto;cursor:ew-resize}.automatic-mode .marker .halo{opacity:.14}
+    body.native-host .mode-dock,body.native-host .legend-tooltip,body.native-host .learning-period-tooltip,body.native-host .control-tooltip,body.native-host .science-popover,body.native-host .learning-onboarding,body.native-host .learning-toast{background:#040d18;filter:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+    body.native-host .mode-dock,body.native-host .learning-period-tooltip,body.native-host .control-tooltip{box-shadow:none}
+    body.native-host .mode,body.native-host .mode button,body.native-host .dock-toggle{filter:none;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;text-shadow:none}
+    body.native-host .mode{background:#122233}
+    body.native-host .mode button.active{background:#344a61;box-shadow:none}
+    body.native-host .dock-toggle{background:#081422}
+    body.native-host .dock-toggle[aria-checked="true"],body.learning-enabled.automatic-mode.native-host .learning-toggle{background:#173b5b}
+    .learning-handles{display:none}body.learning-available.learning-enabled.automatic-mode.learning-window-open .learning-handles{display:block}.learning-handle{cursor:ns-resize;outline:none;touch-action:none}.learning-handle .guide{stroke:currentColor;stroke-width:1.1;stroke-dasharray:3 7;opacity:.4;vector-effect:non-scaling-stroke}.learning-handle .aura{fill:currentColor;opacity:.1}.learning-handle .outer{fill:rgba(3,12,22,.96);stroke:currentColor;stroke-width:2.2;vector-effect:non-scaling-stroke}.learning-handle .inner{fill:currentColor}.learning-handle:hover .aura,.learning-handle:focus-visible .aura,.learning-handle.is-active .aura{opacity:.21}.learning-handle.warmth{color:var(--orange)}.learning-handle.dimming{color:var(--blue)}.learning-handle .learning-value{fill:#f5f8fa;font-size:15px;font-weight:650;text-anchor:middle;font-variant-numeric:tabular-nums}.learning-handle .learning-chip{fill:rgba(4,13,24,.9);stroke:currentColor;stroke-opacity:.32;stroke-width:1;vector-effect:non-scaling-stroke}.learning-handle .learning-label{fill:currentColor;font-size:14px;font-weight:650;text-anchor:middle}.learning-handle .handle-copy{opacity:0;transition:opacity .12s}.learning-handle:hover .handle-copy,.learning-handle:focus-visible .handle-copy,.learning-handle.is-active .handle-copy{opacity:1}
+    .value-offer{position:fixed;z-index:1200;inset:0;display:grid;place-items:center;padding:28px;background:rgba(0,5,11,.7);opacity:0;visibility:hidden;transition:opacity .16s ease,visibility .16s}.value-offer.is-open{opacity:1;visibility:visible}.value-offer-card{position:relative;width:min(530px,calc(100vw - 48px));overflow:hidden;padding:25px 26px 23px;border:1px solid rgba(137,174,201,.31);border-radius:17px;background:linear-gradient(180deg,#0b1a2a 0%,#06111e 100%);box-shadow:0 24px 70px rgba(0,0,0,.66),inset 0 1px rgba(255,255,255,.055);color:rgba(225,233,239,.82)}.value-offer-card:before{position:absolute;content:"";inset:0 0 auto;height:2px;background:linear-gradient(90deg,#86b9e7 0%,#e9d6a7 48%,#f08a65 100%);opacity:.75}.value-offer-close{position:absolute;top:13px;right:13px;width:29px;height:29px;padding:0;border:1px solid transparent;border-radius:50%;background:transparent;color:rgba(209,220,228,.65);font-size:21px;line-height:1;cursor:pointer}.value-offer-close:hover,.value-offer-close:focus-visible{border-color:rgba(146,180,205,.3);background:rgba(33,55,74,.56);color:#f3f6f8;outline:none}.value-offer-kicker{margin:0 38px 8px 0;color:#91bee3;font-size:12px;font-weight:680;letter-spacing:.07em;text-transform:uppercase}.value-offer h2{margin:0 38px 10px 0;color:#f4f7f9;font-size:25px;line-height:1.18;letter-spacing:-.025em}.value-offer p{margin:0;font-size:15px;line-height:1.46}.value-offer-policy{margin-top:13px!important;padding-top:12px;border-top:1px solid rgba(137,174,201,.16);color:rgba(192,205,214,.68);font-size:13px!important}.value-offer-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:19px}.value-offer-action{min-height:38px;padding:0 13px;border:1px solid rgba(137,174,201,.28);border-radius:9px;background:rgba(25,45,63,.62);color:#e8eef2;font-size:14px;font-weight:630;cursor:pointer}.value-offer-action:hover,.value-offer-action:focus-visible{border-color:rgba(151,194,225,.58);background:rgba(38,67,91,.76);outline:none}.value-offer-action.primary{border-color:rgba(111,168,211,.48);background:linear-gradient(180deg,rgba(67,103,137,.96),rgba(38,66,91,.98));color:#fff}.value-offer-corporate{display:block;margin:13px auto 0;padding:3px 5px;border:0;background:transparent;color:#91bee3;font-size:13px;font-weight:570;cursor:pointer}.value-offer-corporate:hover,.value-offer-corporate:focus-visible{color:#cce6fa;text-decoration:underline;outline:none}body.value-offer-open{overflow:hidden}body.native-host .value-offer-card{width:500px;padding:22px 23px 20px}body.native-host .value-offer h2{font-size:22px}body.native-host .value-offer p{font-size:14px}body.native-host .value-offer-policy{font-size:12px!important}
+    @media(max-width:980px){.toolbar{grid-template-columns:minmax(90px,1fr) auto minmax(150px,1fr)}.chart-legend{gap:9px}.legend-dot{width:7px;height:7px}.mode-dock{top:0}}
+    @media(max-width:620px){.dock-toggle .toggle-label{display:none}.dock-toggle{padding:0 8px}}
+    @media(max-width:760px){.status-item:first-child{display:none}.brand-name{display:none}.chart-legend .legend-label{display:none}.mode{width:170px}}
+  </style>
+  <style>
+    html, body { width: 100%; height: 100%; background: #01060c; }
+    body { display: block; padding: 0; }
+    .window {
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      aspect-ratio: auto;
+      transform: none;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .surface { border-radius: 0; }
+    .value-offer { display: none !important; }
+    .toolbar { overflow: visible; }
+    .toolbar > .mode-dock {
+      position: relative;
+      inset: auto;
+      grid-column: 2;
+      grid-row: 1;
+      justify-self: center;
+      margin: 0;
+    }
+    .chart > .chart-legend {
+      position: absolute;
+      z-index: 12;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .toolbar > .mode-dock .ambient-reading { top: calc(100% + 7px); left: 5px; }
+  </style>
+</head>
+<body>
+  <main class="window" aria-label="ChillScreen settings concept">
+    <section class="surface">
+      <header class="toolbar">
+        <div class="toolbar-left">
+          <span class="traffic" aria-hidden="true"><i></i><i></i><i></i></span>
+          <div class="brand" data-brand-slot>
+            <span class="brand-mark" data-brand-mark aria-hidden="true"><img src="assets/brand/chillscreen-mark.svg" alt="" draggable="false"></span>
+            <span class="brand-name" data-brand-name>ChillScreen</span>
+          </div>
+        </div>
+        <div class="chart-legend" aria-label="Chart legend">
+          <button class="legend-item cortisol" type="button" aria-describedby="cortisol-tip"><i class="legend-dot"></i><span class="legend-label">Cortisol</span><span class="legend-tooltip" id="cortisol-tip" role="tooltip">Helps regulate alertness and energy. Typically rises before waking, peaks in the morning, and gradually declines through the day. Elevated cortisol in the evening can interfere with sleep.</span></button>
+          <button class="legend-item melatonin" type="button" aria-describedby="melatonin-tip"><i class="legend-dot"></i><span class="legend-label">Melatonin</span><span class="legend-tooltip" id="melatonin-tip" role="tooltip">A hormone that helps regulate sleep. It rises as evening approaches, stays elevated during the night, and falls toward morning.</span></button>
+          <button class="legend-item warmth" type="button" aria-describedby="warmth-tip"><i class="legend-dot"></i><span class="legend-label">Warmth</span><span class="legend-tooltip" id="warmth-tip" role="tooltip">Shifts the display toward warmer tones and reduces blue light. Research suggests this can reduce the suppression of melatonin caused by evening screen light.</span></button>
+          <button class="legend-item dimming" type="button" aria-describedby="dimming-tip"><i class="legend-dot"></i><span class="legend-label">Dimming</span><span class="legend-tooltip" id="dimming-tip" role="tooltip">Reduces screen brightness as evening approaches. Lower light intensity can reduce the suppression of melatonin caused by bright screens at night.</span></button>
+        </div>
+        <div class="status">
+          <div class="status-chips">
+            <span class="status-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10V6.8a2 2 0 0 1 2-2h3.5a2 2 0 0 1 2 2V10h6.8A2.7 2.7 0 0 1 21 12.7V18h-2v-2H5v2H3v-8h1Zm2-3.2V10h3.5V6.8H6Z"/></svg><span id="sleep-duration">Sleep 8 h</span></span>
+            <span class="status-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 3-7.4 17-2.7-7L4 10.4 21 3Z"/></svg><span id="solar-status">Local sunlight · EEST</span></span>
+          </div>
+          <div class="help-wrap" id="science-help-wrap">
+            <button class="help-button" id="science-help" type="button" aria-label="Science behind ChillScreen" aria-expanded="false" aria-controls="science-popover">?</button>
+            <section class="science-popover" id="science-popover" aria-label="Science behind ChillScreen">
+              <h2>Science behind ChillScreen</h2>
+              <p>ChillScreen is informed by published research on human circadian rhythms, melatonin timing, the cortisol awakening response, and the effects of evening light exposure on melatonin.</p>
+              <p>This research guides the biological rhythms shown in ChillScreen and how warmth and dimming are applied throughout the day.</p>
+              <button class="research-toggle" id="research-toggle" type="button" aria-expanded="false" aria-controls="research-list">View research</button>
+              <ol class="research-list" id="research-list" hidden>
+                <li>Cox RC et al. Distribution of dim light melatonin offset and phase relationship to waketime in healthy adults. <em>Sleep Health</em>, 2024. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12693690/" target="_blank" rel="noopener noreferrer">Full text</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/37777359/" target="_blank" rel="noopener noreferrer">PubMed</a></li>
+                <li>Burgess HJ et al. The relationship between the dim light melatonin onset and sleep on a regular schedule in young healthy adults. <em>Behavioral Sleep Medicine</em>, 2003. <a href="https://pubmed.ncbi.nlm.nih.gov/15600132/" target="_blank" rel="noopener noreferrer">PubMed</a></li>
+                <li>Burgess HJ, Fogg LF. Individual differences in the amount and timing of salivary melatonin secretion. <em>PLoS One</em>, 2008. <a href="https://pubmed.ncbi.nlm.nih.gov/18725972/" target="_blank" rel="noopener noreferrer">PubMed</a></li>
+                <li>Gooley JJ et al. Exposure to room light before bedtime suppresses melatonin onset and shortens melatonin duration in humans. <em>Journal of Clinical Endocrinology &amp; Metabolism</em>, 2011. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3047226/" target="_blank" rel="noopener noreferrer">Full text</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/21193540/" target="_blank" rel="noopener noreferrer">PubMed</a></li>
+                <li>Wehr TA, Aeschbach D, Duncan WC. Evidence for a biological dawn and dusk in the human circadian timing system. <em>Journal of Physiology</em>, 2001. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2278827/" target="_blank" rel="noopener noreferrer">Full text</a></li>
+                <li>Debono M et al. Modified-release hydrocortisone to provide circadian cortisol profiles. <em>Journal of Clinical Endocrinology &amp; Metabolism</em>, 2009. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2684472/" target="_blank" rel="noopener noreferrer">Full text</a></li>
+                <li>Stalder T et al. Cortisol Awakening Response: Regulation and Functional Significance. <em>Endocrine Reviews</em>, 2025. <a href="https://academic.oup.com/edrv/article/46/1/43/7739741" target="_blank" rel="noopener noreferrer">Full text</a></li>
+                <li>Stalder T et al. Evaluation and update of the expert consensus guidelines for the assessment of the cortisol awakening response. <em>Psychoneuroendocrinology</em>, 2022. <a href="https://www.sciencedirect.com/science/article/abs/pii/S0306453022002876" target="_blank" rel="noopener noreferrer">Article</a> · <a href="https://cora.ucc.ie/items/05f12a96-fe61-4d1f-be02-35d2328c194b" target="_blank" rel="noopener noreferrer">Author manuscript</a></li>
+                <li>Bowles NP et al. The circadian system modulates the cortisol awakening response in humans. 2022. <a href="https://pubmed.ncbi.nlm.nih.gov/36408390/" target="_blank" rel="noopener noreferrer">PubMed</a></li>
+                <li>Reiter AM et al. Finding DLMO: estimating dim light melatonin onset from sleep markers derived from questionnaires, diaries and actigraphy. 2020. <a href="https://pubmed.ncbi.nlm.nih.gov/32894981/" target="_blank" rel="noopener noreferrer">PubMed</a></li>
+              </ol>
+              <section class="support-block" id="support-block" aria-label="Choose a value for ChillScreen" hidden>
+                <h3>Pay what you think it’s worth</h3>
+                <p>Personal use can always remain €0. No features are locked.</p>
+                <div class="support-actions">
+                  <a class="support-action" id="support-link" href="#" target="_blank" rel="noopener noreferrer"><img src="assets/buymeacoffee-icon.svg" alt="">Buy me a coffee</a>
+                </div>
+              </section>
+            </section>
+          </div>
+        </div>
+      </header>
+      <section class="chart">
+        <div class="atmosphere"></div>
+        <svg class="landscape" viewBox="0 0 1600 645" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="rearMountainFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5c7180"/><stop offset=".58" stop-color="#2c4356"/><stop offset="1" stop-color="#182b3c"/></linearGradient>
+            <linearGradient id="middleMountainFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b5265"/><stop offset=".62" stop-color="#172d42"/><stop offset="1" stop-color="#0b1c2e"/></linearGradient>
+            <linearGradient id="nearMountainFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#243b50"/><stop offset=".58" stop-color="#10263a"/><stop offset="1" stop-color="#061728"/></linearGradient>
+            <linearGradient id="lakeDepth" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f7186" stop-opacity=".68"/><stop offset=".14" stop-color="#2a526a" stop-opacity=".82"/><stop offset=".48" stop-color="#0e3049" stop-opacity=".94"/><stop offset="1" stop-color="#020c19"/></linearGradient>
+            <linearGradient id="lakeHorizon" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c2d2d8" stop-opacity=".2"/><stop offset=".22" stop-color="#7897a8" stop-opacity=".085"/><stop offset="1" stop-color="#153249" stop-opacity="0"/></linearGradient>
+            <linearGradient id="reflectionFade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="white" stop-opacity=".42"/><stop offset=".42" stop-color="white" stop-opacity=".13"/><stop offset=".82" stop-color="white" stop-opacity=".025"/><stop offset="1" stop-color="black"/></linearGradient>
+            <radialGradient id="terrainDawnLight"><stop offset="0" stop-color="#ffd98f" stop-opacity=".82"/><stop offset=".28" stop-color="#f6b76e" stop-opacity=".46"/><stop offset=".66" stop-color="#c47767" stop-opacity=".12"/><stop offset="1" stop-color="#c47767" stop-opacity="0"/></radialGradient>
+            <radialGradient id="terrainSunsetLight"><stop offset="0" stop-color="#ffb07d" stop-opacity=".78"/><stop offset=".32" stop-color="#ef806c" stop-opacity=".42"/><stop offset=".7" stop-color="#9c5565" stop-opacity=".1"/><stop offset="1" stop-color="#9c5565" stop-opacity="0"/></radialGradient>
+            <radialGradient id="lakeDawnLight"><stop offset="0" stop-color="#ffdba0" stop-opacity=".48"/><stop offset=".32" stop-color="#daa06f" stop-opacity=".19"/><stop offset="1" stop-color="#daa06f" stop-opacity="0"/></radialGradient>
+            <radialGradient id="lakeSunsetLight"><stop offset="0" stop-color="#ffac82" stop-opacity=".46"/><stop offset=".35" stop-color="#c97670" stop-opacity=".18"/><stop offset="1" stop-color="#c97670" stop-opacity="0"/></radialGradient>
+            <linearGradient id="dayTerrainLight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#add7eb" stop-opacity=".25"/><stop offset=".55" stop-color="#7fb1cf" stop-opacity=".17"/><stop offset="1" stop-color="#496f89" stop-opacity=".05"/></linearGradient>
+            <linearGradient id="dayLakeLight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a8c7d4" stop-opacity=".22"/><stop offset=".35" stop-color="#6e9db4" stop-opacity=".12"/><stop offset="1" stop-color="#17374e" stop-opacity="0"/></linearGradient>
+            <linearGradient id="villageLightMap" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1600" y2="0">
+              <stop data-village-light-stop="day" offset="0" stop-color="#7893a0" stop-opacity=".44"/>
+              <stop data-village-light-stop="late-day" offset="55%" stop-color="#667f8d" stop-opacity=".4"/>
+              <stop data-village-light-stop="sunset" offset="65%" stop-color="#9a6e66" stop-opacity=".48"/>
+              <stop data-village-light-stop="night" offset="72%" stop-color="#142638" stop-opacity=".1"/>
+              <stop data-village-light-stop="pre-dawn" offset="90%" stop-color="#263c4d" stop-opacity=".2"/>
+              <stop data-village-light-stop="sunrise" offset="96%" stop-color="#a89670" stop-opacity=".52"/>
+              <stop data-village-light-stop="next-day" offset="100%" stop-color="#718b96" stop-opacity=".46"/>
+            </linearGradient>
+            <linearGradient id="villageHouseMap" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1600" y2="0">
+              <stop data-village-house-stop="day" offset="0" stop-color="#3c5666"/>
+              <stop data-village-house-stop="late-day" offset="55%" stop-color="#314a5a"/>
+              <stop data-village-house-stop="sunset" offset="65%" stop-color="#654b4c"/>
+              <stop data-village-house-stop="night" offset="72%" stop-color="#071522"/>
+              <stop data-village-house-stop="pre-dawn" offset="90%" stop-color="#172c3b"/>
+              <stop data-village-house-stop="sunrise" offset="96%" stop-color="#514b40"/>
+              <stop data-village-house-stop="next-day" offset="100%" stop-color="#354e5b"/>
+            </linearGradient>
+            <clipPath id="terrainClip">
+              <use href="#rearMountainShape"/><use href="#middleMountainShape"/><use href="#nearMountainShape"/>
+            </clipPath>
+            <clipPath id="lakeClip"><rect x="0" y="404" width="1600" height="241"/></clipPath>
+            <clipPath id="nightWindowClip"><rect data-night-window-clip x="1100" y="0" width="500" height="645"/></clipPath>
+            <mask id="reflectionMask"><rect x="0" y="404" width="1600" height="241" fill="url(#reflectionFade)"/></mask>
+            <filter id="farAtmosphere" filterUnits="userSpaceOnUse" x="-50" y="220" width="1700" height="230"><feGaussianBlur stdDeviation="1.1"/></filter>
+            <filter id="terrainGlow" filterUnits="userSpaceOnUse" x="-300" y="130" width="2200" height="430"><feGaussianBlur stdDeviation="27"/></filter>
+            <filter id="waterGlow" filterUnits="userSpaceOnUse" x="-300" y="360" width="2200" height="300"><feGaussianBlur stdDeviation="22"/></filter>
+            <filter id="lakeReflection" filterUnits="userSpaceOnUse" x="-40" y="392" width="1680" height="270"><feGaussianBlur stdDeviation="1.6 4.4"/></filter>
+            <filter id="villageWindowGlow" filterUnits="userSpaceOnUse" x="1000" y="345" width="650" height="100"><feGaussianBlur stdDeviation="2.4"/></filter>
+            <filter id="villageReflection" filterUnits="userSpaceOnUse" x="1000" y="400" width="650" height="55"><feGaussianBlur stdDeviation="1.1 3.8"/></filter>
+            <rect id="farWindowShape" width="3" height="4" rx=".7"/>
+            <rect id="middleWindowShape" width="4" height="6" rx=".9"/>
+            <rect id="nearWindowShape" width="6" height="8" rx="1.2"/>
+            <path id="villageFarShoreShape" d="M842 408C900 402 946 394 1002 391C1080 387 1144 390 1210 394C1285 398 1360 395 1428 398C1500 401 1556 405 1600 408L1600 420C1518 416 1430 414 1344 413C1240 412 1138 411 1044 412C960 413 895 412 842 408Z"/>
+            <path id="villageFarHousesShape" d="M990 397V389L1001 382L1012 389V397ZM1082 394V384L1096 376L1110 384V394ZM1190 399V391L1200 384L1210 391V399ZM1370 402V392L1383 384L1396 392V402ZM1478 404V397L1487 391L1496 397V404Z"/>
+            <path id="villageMiddleShoreShape" d="M930 412C1000 405 1074 398 1152 399C1238 400 1320 405 1402 409C1480 412 1544 414 1600 416L1600 429C1510 425 1420 423 1334 421C1238 418 1148 415 1068 414C1007 413 963 413 930 412Z"/>
+            <path id="villageMiddleHousesShape" d="M1024 407V392L1044 380L1064 392V407ZM1160 411V393L1184 377L1208 393V411ZM1328 415V399L1347 386L1366 399V415ZM1448 419V399L1474 381L1500 399V419Z"/>
+            <path id="villageNearShoreShape" d="M1118 418C1184 413 1248 412 1318 416C1398 420 1482 423 1600 425L1600 447C1495 441 1395 436 1302 431C1225 427 1164 422 1118 418Z"/>
+            <path id="villageNearHousesShape" d="M1118 420V399L1147 380L1176 399V420ZM1238 427V402L1271 379L1304 402V427ZM1510 438V407L1551 383L1592 407V438Z"/>
+            <clipPath id="villageClip"><use href="#villageFarShoreShape"/><use href="#villageFarHousesShape"/><use href="#villageMiddleShoreShape"/><use href="#villageMiddleHousesShape"/><use href="#villageNearShoreShape"/><use href="#villageNearHousesShape"/></clipPath>
+            <path id="rearMountainShape" d="M0 294C41 294 68 280 101 271L126 278L157 251L180 262L214 231L238 244L275 205L302 226L329 199L354 215L381 204L414 245L443 239C492 286 542 326 601 351C666 378 724 388 792 392C862 393 926 390 990 389C1050 386 1112 382 1178 380C1246 380 1314 372 1378 361L1411 367L1444 352L1471 361L1507 344L1535 354L1568 339L1600 346V422H0Z"/>
+            <path id="middleMountainShape" d="M0 347C42 345 75 335 109 322L138 330L171 303L197 316L230 278L259 297L291 268L319 287L350 275L382 311L412 302C456 337 503 365 558 382C620 401 683 408 754 410C824 412 891 406 953 390C1019 388 1077 391 1137 397L1182 390L1222 396L1268 382L1307 392L1352 375L1393 388L1438 369L1479 381L1524 363L1561 374L1600 358V426H0Z"/>
+            <path id="nearMountainShape" d="M0 391C46 385 86 375 125 361L158 372L195 340L225 356L263 319L296 339L334 309L365 328L403 306L441 346L476 338C530 374 586 399 650 413C715 427 781 431 850 431C918 431 985 426 1047 413C1112 420 1172 422 1230 418L1270 411L1312 420L1356 409L1398 417L1440 405L1482 414L1526 400L1564 408L1600 395V432H0Z"/>
+          </defs>
+
+          <use href="#rearMountainShape" fill="url(#rearMountainFill)" opacity=".48" filter="url(#farAtmosphere)"/>
+          <use href="#middleMountainShape" fill="url(#middleMountainFill)" opacity=".67"/>
+          <use href="#nearMountainShape" fill="url(#nearMountainFill)" opacity=".9"/>
+          <g class="terrain-light" clip-path="url(#terrainClip)" filter="url(#terrainGlow)">
+            <rect data-terrain-day x="180" y="220" width="850" height="230" rx="90" fill="url(#dayTerrainLight)" opacity=".9"/>
+            <ellipse data-terrain-sunrise cx="180" cy="365" rx="175" ry="130" fill="url(#terrainDawnLight)"/>
+            <ellipse data-terrain-sunset cx="1030" cy="365" rx="205" ry="145" fill="url(#terrainSunsetLight)"/>
+            <ellipse data-terrain-next-sunrise cx="1490" cy="365" rx="175" ry="130" fill="url(#terrainDawnLight)"/>
+          </g>
+          <rect x="0" y="404" width="1600" height="241" fill="url(#lakeDepth)"/>
+          <g clip-path="url(#lakeClip)" mask="url(#reflectionMask)" filter="url(#lakeReflection)">
+            <use href="#rearMountainShape" transform="translate(0 808) scale(1 -1)" fill="#7890a0" opacity=".17"/>
+            <use href="#middleMountainShape" transform="translate(0 808) scale(1 -1)" fill="#385a70" opacity=".18"/>
+            <use href="#nearMountainShape" transform="translate(0 808) scale(1 -1)" fill="#15384f" opacity=".22"/>
+          </g>
+          <rect x="0" y="404" width="1600" height="170" fill="url(#lakeHorizon)"/>
+          <g class="water-light" clip-path="url(#lakeClip)" filter="url(#waterGlow)">
+            <rect data-lake-day x="180" y="398" width="850" height="190" rx="90" fill="url(#dayLakeLight)" opacity=".95"/>
+            <ellipse data-lake-sunrise cx="180" cy="430" rx="130" ry="115" fill="url(#lakeDawnLight)"/>
+            <ellipse data-lake-sunset cx="1030" cy="430" rx="150" ry="120" fill="url(#lakeSunsetLight)"/>
+            <ellipse data-lake-next-sunrise cx="1490" cy="430" rx="130" ry="115" fill="url(#lakeDawnLight)"/>
+          </g>
+          <g class="water-ripples" opacity=".2">
+            <path d="M45 423C198 418 322 428 477 422S761 416 919 423 1230 429 1555 421" stroke="#b4c9d2" stroke-width="1"/>
+            <path d="M91 440C260 433 399 446 580 439S906 434 1082 440 1340 447 1519 439" stroke="#7297aa" stroke-width=".85"/>
+            <path d="M28 461C207 454 354 467 530 460S827 454 1014 461 1330 468 1573 458" stroke="#507c92" stroke-width=".72"/>
+            <path d="M134 489C317 483 473 495 661 488S993 484 1176 490 1382 493 1532 487" stroke="#315c74" stroke-width=".65"/>
+          </g>
+          <line x1="0" y1="404" x2="1600" y2="404" stroke="#c5d6dc" stroke-opacity=".15" stroke-width="1"/>
+          <g class="night-village">
+            <g clip-path="url(#nightWindowClip)" fill="#efb164" filter="url(#villageReflection)">
+              <g opacity=".055"><rect x="997" y="420" width="2" height="11"/><rect x="1089" y="420" width="2" height="13"/><rect x="1377" y="420" width="2" height="12"/></g>
+              <g opacity=".08"><rect x="1035" y="429" width="3" height="15"/><rect x="1175" y="429" width="3" height="17"/><rect x="1464" y="429" width="3" height="16"/></g>
+              <g opacity=".1"><rect x="1134" y="447" width="4" height="18"/><rect x="1255" y="447" width="4" height="21"/><rect x="1531" y="447" width="4" height="19"/></g>
+            </g>
+
+            <g class="village-far">
+              <use href="#villageFarShoreShape" fill="#20384a" opacity=".3"/>
+              <use href="#villageFarHousesShape" fill="url(#villageHouseMap)" opacity=".88"/>
+              <g fill="#1b3041" opacity=".42"><use href="#farWindowShape" x="996" y="390"/><use href="#farWindowShape" x="1004" y="390"/><use href="#farWindowShape" x="1088" y="385"/><use href="#farWindowShape" x="1100" y="385"/><use href="#farWindowShape" x="1198" y="392"/><use href="#farWindowShape" x="1377" y="393"/><use href="#farWindowShape" x="1387" y="393"/><use href="#farWindowShape" x="1485" y="398"/></g>
+            </g>
+
+            <g class="village-middle">
+              <use href="#villageMiddleShoreShape" fill="#102637" opacity=".64"/>
+              <use href="#villageMiddleHousesShape" fill="url(#villageHouseMap)" opacity=".95"/>
+              <g fill="#1b3041" opacity=".48"><use href="#middleWindowShape" x="1034" y="397"/><use href="#middleWindowShape" x="1050" y="397"/><use href="#middleWindowShape" x="1173" y="399"/><use href="#middleWindowShape" x="1193" y="399"/><use href="#middleWindowShape" x="1344" y="404"/><use href="#middleWindowShape" x="1462" y="406"/><use href="#middleWindowShape" x="1482" y="406"/></g>
+            </g>
+
+            <g class="village-near">
+              <use href="#villageNearShoreShape" fill="#061522" opacity=".9"/>
+              <use href="#villageNearHousesShape" fill="url(#villageHouseMap)" opacity="1"/>
+              <g fill="#192d3d" opacity=".58"><use href="#nearWindowShape" x="1132" y="407"/><use href="#nearWindowShape" x="1154" y="407"/><use href="#nearWindowShape" x="1252" y="411"/><use href="#nearWindowShape" x="1274" y="411"/><use href="#nearWindowShape" x="1293" y="411"/><use href="#nearWindowShape" x="1528" y="418"/><use href="#nearWindowShape" x="1552" y="418"/><use href="#nearWindowShape" x="1576" y="418"/></g>
+            </g>
+
+            <g class="village-lighting" aria-hidden="true">
+              <use href="#villageFarShoreShape" fill="url(#villageLightMap)" opacity=".18"/>
+              <use href="#villageMiddleShoreShape" fill="url(#villageLightMap)" opacity=".16"/>
+              <use href="#villageNearShoreShape" fill="url(#villageLightMap)" opacity=".12"/>
+            </g>
+
+            <g clip-path="url(#nightWindowClip)">
+              <g class="village-window-glow" opacity=".16">
+                <use href="#middleWindowShape" x="1034" y="397"/><use href="#middleWindowShape" x="1050" y="397"/><use href="#middleWindowShape" x="1173" y="399"/><use href="#middleWindowShape" x="1193" y="399"/><use href="#middleWindowShape" x="1344" y="404"/><use href="#middleWindowShape" x="1462" y="406"/><use href="#middleWindowShape" x="1482" y="406"/>
+                <use href="#nearWindowShape" x="1132" y="407"/><use href="#nearWindowShape" x="1154" y="407"/><use href="#nearWindowShape" x="1252" y="411"/><use href="#nearWindowShape" x="1274" y="411"/><use href="#nearWindowShape" x="1293" y="411"/><use href="#nearWindowShape" x="1528" y="418"/><use href="#nearWindowShape" x="1552" y="418"/><use href="#nearWindowShape" x="1576" y="418"/>
+              </g>
+              <g class="village-window" opacity=".69">
+                <use href="#farWindowShape" x="996" y="390" opacity=".48"/><use href="#farWindowShape" x="1004" y="390" opacity=".34"/><use href="#farWindowShape" x="1088" y="385" opacity=".42"/><use href="#farWindowShape" x="1100" y="385" opacity=".3"/><use href="#farWindowShape" x="1198" y="392" opacity=".4"/><use href="#farWindowShape" x="1377" y="393" opacity=".38"/><use href="#farWindowShape" x="1387" y="393" opacity=".32"/><use href="#farWindowShape" x="1485" y="398" opacity=".44"/>
+                <use href="#middleWindowShape" x="1034" y="397" opacity=".56"/><use href="#middleWindowShape" x="1050" y="397" opacity=".38"/><use href="#middleWindowShape" x="1173" y="399" opacity=".52"/><use href="#middleWindowShape" x="1193" y="399" opacity=".42"/><use href="#middleWindowShape" x="1344" y="404" opacity=".48"/><use href="#middleWindowShape" x="1462" y="406" opacity=".58"/><use href="#middleWindowShape" x="1482" y="406" opacity=".5"/>
+                <use href="#nearWindowShape" x="1132" y="407"/><use href="#nearWindowShape" x="1154" y="407" opacity=".56"/><use href="#nearWindowShape" x="1252" y="411" opacity=".74"/><use href="#nearWindowShape" x="1274" y="411" opacity=".52"/><use href="#nearWindowShape" x="1293" y="411" opacity=".66"/><use href="#nearWindowShape" x="1528" y="418" opacity=".72"/><use href="#nearWindowShape" x="1552" y="418" opacity=".58"/><use href="#nearWindowShape" x="1576" y="418" opacity=".68"/>
+              </g>
+            </g>
+          </g>
+        </svg>
+        <div class="depth-vignette"></div>
+        <div class="mode-dock" aria-label="Display controls">
+          <button class="dock-toggle ambient-toggle" id="ambient-light" type="button" role="switch" aria-checked="true" aria-label="Ambient Light" aria-describedby="ambient-light-tip"><span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span><span class="toggle-label">Ambient Light</span><span class="control-tooltip" id="ambient-light-tip" role="tooltip">Adapts Automatic to room light. Darker rooms add more dimming and a little warmth.</span></button>
+          <button class="dock-toggle learning-toggle" id="learning-mode" type="button" role="switch" aria-checked="false" aria-label="Learning" aria-describedby="learning-period-tip"><span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span><span class="toggle-label">Learning</span><span class="learning-period-tooltip" id="learning-period-tip" role="tooltip"><strong>Personalizes Automatic mode.</strong><span>Learns from your evening adjustments. All learning data stays on this Mac. Manage or reset it in Advanced Settings.</span></span></button>
+          <div class="mode" role="tablist" aria-label="Schedule mode"><button type="button" role="tab" data-mode="automatic" aria-describedby="automatic-tip">Automatic<span class="control-tooltip" id="automatic-tip" role="tooltip">Uses your schedule, local sunlight, Learning, and Ambient Light.</span></button><button type="button" class="active" role="tab" data-mode="manual" aria-selected="true" aria-describedby="manual-tip">Manual<span class="control-tooltip" id="manual-tip" role="tooltip">Uses the schedule and effect levels you set yourself.</span></button></div>
+          <button class="dock-toggle preview-toggle" id="preview-max" type="button" role="switch" aria-checked="false" aria-label="Preview maximum" aria-describedby="preview-tip"><span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span><span class="toggle-label preview-label">Preview max</span><span class="control-tooltip" id="preview-tip" role="tooltip">Temporarily shows the strongest Warmth and Dimming in Manual.</span></button>
+          <span class="ambient-reading" id="ambient-reading" aria-live="polite">Waiting for sensor</span>
+        </div>
+        <section class="learning-onboarding" id="learning-onboarding" aria-label="Start Learning" aria-hidden="true">
+          <h2>Teach ChillScreen what feels right</h2>
+          <p>Adjust Warmth and Dimming whenever the screen does not feel right. ChillScreen keeps the examples on this Mac and uses them only to personalize Automatic.</p>
+          <div class="learning-actions"><button id="learning-not-now" type="button">Not now</button><button class="primary" id="learning-start" type="button">Start Learning</button></div>
+        </section>
+        <div class="learning-toast" id="learning-toast" role="status" aria-live="polite" aria-hidden="true">
+          <i aria-hidden="true"></i><span id="learning-toast-copy">Learned</span><button id="learning-undo" type="button">Undo</button>
+        </div>
+        <svg id="cycle" viewBox="0 0 1600 645" role="img" aria-label="ChillScreen daily cycle">
+          <desc>A timeline from four in the morning until seven the following morning, showing local daylight, cortisol, melatonin, screen warmth and dimming.</desc>
+          <defs>
+            <filter id="curveBloom" filterUnits="userSpaceOnUse" x="-80" y="165" width="1760" height="365"><feGaussianBlur stdDeviation="8"/></filter><filter id="curveHalo" filterUnits="userSpaceOnUse" x="-80" y="165" width="1760" height="365"><feGaussianBlur stdDeviation="3.1"/></filter><filter id="curveEdge" filterUnits="userSpaceOnUse" x="-80" y="165" width="1760" height="365"><feGaussianBlur stdDeviation=".5"/></filter><filter id="iconGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4.5"/></filter><filter id="iconSoft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation=".35"/></filter><filter id="markerGlow" x="-180%" y="-180%" width="460%" height="460%"><feGaussianBlur stdDeviation="5.5"/></filter><filter id="cardShadow" x="-30%" y="-30%" width="170%" height="180%"><feDropShadow dx="0" dy="7" stdDeviation="9" flood-color="#000" flood-opacity=".38"/></filter>
+            <mask id="moonMaskA"><rect width="54" height="54" fill="white"/><circle cx="35" cy="17" r="20" fill="black"/></mask><mask id="moonMaskB"><rect width="54" height="54" fill="white"/><circle cx="35" cy="17" r="20" fill="black"/></mask>
+          </defs>
+          <g class="celestial sun-tone" data-solar="sunrise" transform="translate(170 58)"><line class="solar-guide" x1="27" y1="76" x2="27" y2="407"/><circle class="glow" cx="27" cy="28" r="19"/><path class="fill" d="M15 34a12 12 0 0 1 24 0Z"/><path class="stroke" d="M8 35h38M14 41h26M27 18V6M21 12l6-6 6 6"/><text class="solar-time" x="27" y="66">06:00</text></g>
+          <g class="celestial sun-tone" data-solar="sun" transform="translate(663 58)"><circle class="glow" cx="27" cy="27" r="21"/><circle class="fill" cx="27" cy="27" r="12"/><path class="stroke" d="M27 4v9M27 41v9M4 27h9M41 27h9M11 11l7 7M36 36l7 7M11 43l7-7M36 18l7-7"/></g>
+          <g class="celestial sunset-tone" data-solar="sunset" transform="translate(1037 58)"><line class="solar-guide" x1="27" y1="76" x2="27" y2="407"/><circle class="glow" cx="27" cy="28" r="19"/><path class="fill" d="M15 30a12 12 0 0 1 24 0Z"/><path class="stroke" d="M8 31h38M14 37h26M27 5v12M21 11l6 6 6-6"/><text class="solar-time" x="27" y="66">21:00</text></g>
+          <g class="celestial moon-tone" data-solar="moon" transform="translate(1286 58)"><circle class="glow" cx="27" cy="27" r="20"/><circle class="fill" cx="25" cy="28" r="17" mask="url(#moonMaskB)"/></g>
+          <g class="celestial sun-tone" data-solar="next-sunrise" transform="translate(1480 58)"><line class="solar-guide" x1="27" y1="76" x2="27" y2="407"/><circle class="glow" cx="27" cy="28" r="19"/><path class="fill" d="M15 34a12 12 0 0 1 24 0Z"/><path class="stroke" d="M8 35h38M14 41h26M27 18V6M21 12l6-6 6 6"/><text class="solar-time" x="27" y="66">06:00</text></g>
+
+          <g class="current-time" data-current-time transform="translate(330 0)"><line x1="0" y1="138" x2="0" y2="506"/><rect x="-29" y="114" width="58" height="22" rx="8"/><text y="130">08:52</text></g>
+
+          <g class="learning-handles" aria-label="Teach ChillScreen at the current time">
+            <g class="learning-handle warmth" data-learning-effect="warmth" tabindex="0" role="slider" aria-label="Teach current Warmth" aria-valuemin="0" aria-valuemax="100" aria-valuenow="68">
+              <line class="guide" x1="0" y1="-64" x2="0" y2="64"/>
+              <circle class="aura" r="19"/><circle class="outer" r="10"/><circle class="inner" r="4"/>
+              <g class="handle-copy" transform="translate(-45 -52)"><rect class="learning-chip" width="90" height="38" rx="10"/><text class="learning-label" x="45" y="15">Warmth</text><text class="learning-value" x="45" y="31">68%</text></g>
+            </g>
+            <g class="learning-handle dimming" data-learning-effect="dimming" tabindex="0" role="slider" aria-label="Teach current Dimming" aria-valuemin="0" aria-valuemax="100" aria-valuenow="28">
+              <line class="guide" x1="0" y1="-64" x2="0" y2="64"/>
+              <circle class="aura" r="19"/><circle class="outer" r="10"/><circle class="inner" r="4"/>
+              <g class="handle-copy" transform="translate(16 -19)"><rect class="learning-chip" width="90" height="38" rx="10"/><text class="learning-label" x="45" y="15">Dimming</text><text class="learning-value" x="45" y="31">28%</text></g>
+            </g>
+          </g>
+
+          <g aria-label="Reference and screen curves">
+            <path class="curve-bloom cortisol" d="M60 455C145 452 210 405 280 292C304 252 335 236 376 238C525 250 701 327 894 400C1087 474 1320 474 1540 452"/><path class="curve-halo cortisol" d="M60 455C145 452 210 405 280 292C304 252 335 236 376 238C525 250 701 327 894 400C1087 474 1320 474 1540 452"/><path class="curve-core cortisol" d="M60 455C145 452 210 405 280 292C304 252 335 236 376 238C525 250 701 327 894 400C1087 474 1320 474 1540 452"/>
+            <path class="curve-bloom melatonin" d="M60 440C132 439 187 438 245 450C340 468 650 470 865 468C957 466 1008 424 1060 350C1125 258 1224 217 1324 220C1428 224 1487 320 1540 430"/><path class="curve-halo melatonin" d="M60 440C132 439 187 438 245 450C340 468 650 470 865 468C957 466 1008 424 1060 350C1125 258 1224 217 1324 220C1428 224 1487 320 1540 430"/><path class="curve-core melatonin" d="M60 440C132 439 187 438 245 450C340 468 650 470 865 468C957 466 1008 424 1060 350C1125 258 1224 217 1324 220C1428 224 1487 320 1540 430"/>
+            <path class="curve-bloom warmth" d="M60 456C145 454 208 439 272 374C306 340 344 341 386 359C514 413 697 438 863 424C954 416 1008 370 1064 334C1135 288 1248 280 1345 300C1440 320 1493 381 1540 451"/><path class="curve-halo warmth" d="M60 456C145 454 208 439 272 374C306 340 344 341 386 359C514 413 697 438 863 424C954 416 1008 370 1064 334C1135 288 1248 280 1345 300C1440 320 1493 381 1540 451"/><path class="curve-core warmth" d="M60 456C145 454 208 439 272 374C306 340 344 341 386 359C514 413 697 438 863 424C954 416 1008 370 1064 334C1135 288 1248 280 1345 300C1440 320 1493 381 1540 451"/>
+            <path class="curve-bloom dimming" d="M60 458C344 458 648 458 865 457C957 455 1010 420 1065 381C1138 330 1247 326 1345 345C1444 364 1490 410 1540 453"/><path class="curve-halo dimming" d="M60 458C344 458 648 458 865 457C957 455 1010 420 1065 381C1138 330 1247 326 1345 345C1444 364 1490 410 1540 453"/><path class="curve-core dimming" d="M60 458C344 458 648 458 865 457C957 455 1010 420 1065 381C1138 330 1247 326 1345 345C1444 364 1490 410 1540 453"/>
+          </g>
+          <g class="curve-handle warmth" data-effect="warmth" transform="translate(1050 344)" tabindex="0" aria-label="Warmth transition 3 hours, level 61 percent"><g class="effect-card" transform="translate(16 -132)"><rect width="168" height="118" rx="15"/><text class="card-title" x="18" y="25">Warmth</text><text class="card-key" x="18" y="50" style="fill:#cbd3d9">Transition</text><text class="card-value card-duration" x="150" y="50" style="fill:#f7fafc">3 h</text><text class="card-key" x="18" y="77" style="fill:#cbd3d9">Now</text><text class="card-value card-now" x="150" y="77" style="fill:#f7fafc">0%</text><text class="card-key card-peak-label" x="18" y="103" style="fill:#cbd3d9">Max</text><text class="card-value card-max" x="150" y="103" style="fill:#f7fafc">61%</text></g><g class="handle-label"><text>Warmth</text></g><circle class="aura" r="20"/><circle class="outer" r="10"/><circle class="inner" r="4"/></g>
+          <g class="curve-handle dimming" data-effect="dimming" transform="translate(1050 392)" tabindex="0" aria-label="Dimming transition 3 hours, level 42 percent"><g class="effect-card" transform="translate(16 -132)"><rect width="168" height="118" rx="15"/><text class="card-title" x="18" y="25">Dimming</text><text class="card-key" x="18" y="50" style="fill:#cbd3d9">Transition</text><text class="card-value card-duration" x="150" y="50" style="fill:#f7fafc">3 h</text><text class="card-key" x="18" y="77" style="fill:#cbd3d9">Now</text><text class="card-value card-now" x="150" y="77" style="fill:#f7fafc">0%</text><text class="card-key card-peak-label" x="18" y="103" style="fill:#cbd3d9">Max</text><text class="card-value card-max" x="150" y="103" style="fill:#f7fafc">42%</text></g><g class="handle-label"><text>Dimming</text></g><circle class="aura" r="20"/><circle class="outer" r="10"/><circle class="inner" r="4"/></g>
+
+          <path class="timeline" d="M60 545H1540"/>
+          <g class="tick"><circle cx="60" cy="545" r="3"/><circle cx="115" cy="545" r="2.2"/><circle cx="170" cy="545" r="3"/><circle cx="225" cy="545" r="2.2"/><circle cx="280" cy="545" r="3"/><circle cx="335" cy="545" r="2.2"/><circle cx="390" cy="545" r="3"/><circle cx="445" cy="545" r="2.2"/><circle cx="500" cy="545" r="3"/><circle cx="555" cy="545" r="2.2"/><circle cx="610" cy="545" r="3"/><circle cx="665" cy="545" r="2.2"/><circle cx="720" cy="545" r="3"/><circle cx="775" cy="545" r="2.2"/><circle cx="830" cy="545" r="3"/><circle cx="885" cy="545" r="2.2"/><circle cx="940" cy="545" r="3"/><circle cx="995" cy="545" r="2.2"/><circle cx="1050" cy="545" r="3"/><circle cx="1105" cy="545" r="2.2"/><circle cx="1160" cy="545" r="3"/><circle cx="1215" cy="545" r="2.2"/><circle cx="1270" cy="545" r="3"/><circle cx="1325" cy="545" r="2.2"/><circle cx="1380" cy="545" r="3"/><circle cx="1435" cy="545" r="2.2"/><circle cx="1490" cy="545" r="3"/><circle cx="1540" cy="545" r="2.2"/></g>
+          <g class="hour"><text x="60" y="582">04</text><text x="170" y="582">06</text><text x="280" y="582">08</text><text x="390" y="582">10</text><text x="500" y="582">12</text><text x="610" y="582">14</text><text x="720" y="582">16</text><text x="830" y="582">18</text><text x="940" y="582">20</text><text x="1050" y="582">22</text><text x="1160" y="582">00</text><text x="1270" y="582">02</text><text x="1380" y="582">04</text><text x="1490" y="582">06</text></g><text class="day-note" x="60" y="611">Today</text><text class="day-note" x="1490" y="611">Next day</text>
+
+          <g class="marker wake" data-event="wake" transform="translate(225)" tabindex="0" aria-label="Wake time 07:00"><g class="marker-tooltip" data-tooltip-width="280"><rect y="438" width="280" height="38" rx="11"/><text x="16" y="463">Set your typical wake-up time.</text></g><line class="stem" y1="506" y2="545"/><circle class="halo" cy="512" r="26"/><circle class="ring" cy="512" r="18"/><circle class="dot" cy="545" r="7"/><path class="icon" d="M-9 512a9 9 0 1 1 18 0 9 9 0 0 1-18 0Zm9-5v6l4 2M-7 521l-3 3M7 521l3 3M-11 502l5-4M11 502l-5-4"/><text class="event-time" y="582">07:00</text><text class="event-name" y="611">Wake</text></g>
+          <g class="marker evening" data-event="evening" transform="translate(885)" tabindex="0" aria-label="Evening starts at 19:00"><g class="marker-tooltip" data-tooltip-width="430"><rect y="414" width="430" height="62" rx="11"/><text x="16" y="439"><tspan x="16">Set when you want ChillScreen to start.</tspan><tspan x="16" dy="22">Ideally, no later than when melatonin begins to rise.</tspan></text></g><path class="guide" d="M0 212V506"/><line class="stem" y1="506" y2="545"/><circle class="halo" cy="512" r="26"/><circle class="ring" cy="512" r="18"/><circle class="dot" cy="545" r="7"/><path class="icon" d="M-10 516h20M-7 511a7 7 0 0 1 14 0M0 498v6M-8 502l4 4M8 502l-4 4"/><text class="event-time" y="582">19:00</text><text class="event-name" y="611">Evening</text></g>
+          <g class="marker bedtime" data-event="bedtime" transform="translate(1105)" tabindex="0" aria-label="Bedtime 23:00"><g class="marker-tooltip" data-tooltip-width="310"><rect y="438" width="310" height="38" rx="11"/><text x="16" y="463">Set the time you typically go to bed.</text></g><path class="guide" d="M0 212V506"/><line class="stem" y1="506" y2="545"/><circle class="halo" cy="512" r="26"/><circle class="ring" cy="512" r="18"/><circle class="dot" cy="545" r="7"/><path class="icon" d="M-11 520v-18M-11 513h22v7M-7 506h5a4 4 0 0 1 4 4v3M2 509h5a4 4 0 0 1 4 4M-8 520v3M8 520v3"/><text class="event-time" y="582">23:00</text><text class="event-name" y="611">Bedtime</text></g>
+
+        </svg>
+      </section>
+    </section>
+  </main>
+  <div class="screen-preview" id="screen-preview" aria-hidden="true"></div>
+  <section class="value-offer" id="value-offer" role="dialog" aria-modal="true" aria-labelledby="value-offer-title" aria-hidden="true">
+    <div class="value-offer-card">
+      <button class="value-offer-close" id="value-offer-close" type="button" aria-label="Decide later">×</button>
+      <div class="value-offer-kicker">Thank you for using ChillScreen</div>
+      <h2 id="value-offer-title">Pay what it’s worth to you</h2>
+      <p>Thank you for giving ChillScreen a place on your Mac. If it has made your evenings more comfortable and feels useful to you, choose whatever amount matches that value — including €0.</p>
+      <p class="value-offer-policy">ChillScreen always remains fully available for personal use, all nonprofit organizations, and government educational organizations, even when you choose €0. Commercial organizations deploying or managing ChillScreen for employees need a corporate license.</p>
+      <div class="value-offer-actions">
+        <button class="value-offer-action" id="value-offer-free" type="button">Continue for €0</button>
+        <button class="value-offer-action primary" id="value-offer-amount" type="button">Choose an amount</button>
+      </div>
+      <button class="value-offer-corporate" id="value-offer-corporate" type="button">Corporate licensing</button>
+    </div>
+  </section>
+  <script>
+    const brandIdentity = { name: 'ChillScreen' };
+    document.querySelector('[data-brand-name]').textContent = brandIdentity.name;
+    document.title = `${brandIdentity.name} — Daily Cycle`;
+    document.querySelector('.window').setAttribute('aria-label', `${brandIdentity.name} settings concept`);
+    document.querySelector('#cycle').setAttribute('aria-label', `${brandIdentity.name} daily cycle`);
+    const tabs = [...document.querySelectorAll('.mode button')];
+    const nativeHost = Boolean(window.webkit?.messageHandlers?.chillScreen);
+    const learningMockState = nativeHost ? null : new URLSearchParams(window.location.search).get('learningMock');
+    const learningSupported = nativeHost || Boolean(learningMockState);
+    document.body.classList.toggle('native-host', nativeHost);
+    document.body.classList.toggle('learning-available', learningSupported);
+    if (nativeHost) {
+      document.querySelector('.surface').appendChild(document.querySelector('.mode-dock'));
+      document.querySelectorAll('#cycle, .landscape').forEach(element => {
+        element.setAttribute('viewBox', '0 0 1600 620');
+      });
+      document.addEventListener('focusin', () => {
+        requestAnimationFrame(() => window.scrollTo(0, 0));
+      });
+    }
+    document.querySelectorAll('.effect-card .card-value').forEach(element => {
+      element.style.setProperty('fill', '#f8fafc', 'important');
+      element.style.setProperty('color', '#f8fafc', 'important');
+    });
+    let applyingNativeState = false;
+    let nativeCurrentLevels = null;
+    let nativeEnabled = true;
+    const postNative = payload => {
+      if (nativeHost && !applyingNativeState) window.webkit.messageHandlers.chillScreen.postMessage(payload);
+    };
+    const svg = document.querySelector('#cycle');
+    const markers = [...document.querySelectorAll('.marker[data-event]')];
+    const handles = [...document.querySelectorAll('.curve-handle[data-effect]')];
+    const sleepDurationLabel = document.querySelector('#sleep-duration');
+    const solarStatusLabel = document.querySelector('#solar-status');
+    const solarMarkers = new Map([...document.querySelectorAll('.celestial[data-solar]')].map(marker => [marker.dataset.solar, marker]));
+    const solarMarkerY = nativeHost ? 74 : 58;
+    const chart = document.querySelector('.chart');
+    const atmosphere = document.querySelector('.atmosphere');
+    const landscape = document.querySelector('.landscape');
+    const sceneLights = {
+      terrainDay: landscape.querySelector('[data-terrain-day]'),
+      terrainSunrise: landscape.querySelector('[data-terrain-sunrise]'),
+      terrainSunset: landscape.querySelector('[data-terrain-sunset]'),
+      terrainNextSunrise: landscape.querySelector('[data-terrain-next-sunrise]'),
+      lakeDay: landscape.querySelector('[data-lake-day]'),
+      lakeSunrise: landscape.querySelector('[data-lake-sunrise]'),
+      lakeSunset: landscape.querySelector('[data-lake-sunset]'),
+      lakeNextSunrise: landscape.querySelector('[data-lake-next-sunrise]')
+    };
+    const villageLighting = landscape.querySelector('.village-lighting');
+    const villageLightStops = Object.fromEntries([...landscape.querySelectorAll('[data-village-light-stop]')]
+      .map(stop => [stop.dataset.villageLightStop, stop]));
+    const villageHouseStops = Object.fromEntries([...landscape.querySelectorAll('[data-village-house-stop]')]
+      .map(stop => [stop.dataset.villageHouseStop, stop]));
+    const villageHouseColors = {
+      day: '#3c5666', 'late-day': '#314a5a', sunset: '#654b4c', night: '#071522',
+      'pre-dawn': '#172c3b', sunrise: '#514b40', 'next-day': '#354e5b'
+    };
+    const nightWindowClip = landscape.querySelector('[data-night-window-clip]');
+    const hourLabels = [...document.querySelectorAll('.hour text')];
+    const previewToggle = document.querySelector('#preview-max');
+    const learningToggle = document.querySelector('#learning-mode');
+    const ambientLightToggle = document.querySelector('#ambient-light');
+    const ambientLightReading = document.querySelector('#ambient-reading');
+    const learningToggleLabel = learningToggle.querySelector('.toggle-label');
+    const learningOnboarding = document.querySelector('#learning-onboarding');
+    const learningStart = document.querySelector('#learning-start');
+    const learningNotNow = document.querySelector('#learning-not-now');
+    const learningToast = document.querySelector('#learning-toast');
+    const learningToastCopy = document.querySelector('#learning-toast-copy');
+    const learningUndo = document.querySelector('#learning-undo');
+    const learningHandles = [...document.querySelectorAll('.learning-handle[data-learning-effect]')];
+    if (learningSupported) svg.appendChild(document.querySelector('.learning-handles'));
+    const previewLayer = document.querySelector('#screen-preview');
+    const previewLabel = previewToggle.querySelector('.preview-label');
+    const currentTimeMarker = document.querySelector('[data-current-time]');
+    const scienceHelpWrap = document.querySelector('#science-help-wrap');
+    const scienceHelpButton = document.querySelector('#science-help');
+    const researchToggle = document.querySelector('#research-toggle');
+    const researchList = document.querySelector('#research-list');
+    const supportBlock = document.querySelector('#support-block');
+    const supportLink = document.querySelector('#support-link');
+    const valueOffer = document.querySelector('#value-offer');
+    const valueOfferClose = document.querySelector('#value-offer-close');
+    const valueOfferFree = document.querySelector('#value-offer-free');
+    const valueOfferAmount = document.querySelector('#value-offer-amount');
+    const valueOfferCorporate = document.querySelector('#value-offer-corporate');
+    const outputElements = Object.fromEntries(handles.map(handle => [handle.dataset.effect, {
+      now: handle.querySelector('.card-now'),
+      peak: handle.querySelector('.card-max'),
+      peakLabel: handle.querySelector('.card-peak-label')
+    }]));
+    const schedule = { wake: 7, evening: 19, bedtime: 23 };
+    const curveScale = { top: 220, bottom: 465.5 };
+    const effects = {
+      warmth: { time: 22, y: 316, minY: curveScale.top, maxY: curveScale.bottom, baseline: curveScale.bottom },
+      dimming: { time: 22, y: 362, minY: curveScale.top, maxY: curveScale.bottom, baseline: curveScale.bottom }
+    };
+    const automaticProfile = {
+      schedule: { wake: 7, evening: 19, bedtime: 23 },
+      effects: { warmth: { time: 22, level: 55 }, dimming: { time: 22, level: 10 } }
+    };
+    const axis = { start: 4, end: 31, left: 60, right: 1540 };
+    const minimumSleepInterval = .25;
+    let activeMarker = null;
+    let activeHandle = null;
+    let activePointerId = null;
+    let previewingMax = false;
+    let currentMode = 'manual';
+    let manualProfile = null;
+    let profileAnimationFrame = null;
+    let profileAnimating = false;
+    let learningEnabled = false;
+    let ambientLightEnabled = true;
+    let ambientLightAvailable = true;
+    let ambientLightStatus = 'waiting';
+    let ambientLightLux = null;
+    let learningRecordingAvailable = true;
+    let learningOnboardingCompleted = false;
+    let learningTargetsInitialized = false;
+    let activeLearningHandle = null;
+    let learningPointerId = null;
+    let learningMouseDragActive = false;
+    let learningCommitTimer = null;
+    let pendingLearningCommit = null;
+    let learningPreviewActive = false;
+    let solarMorningCutoff = 6;
+    const learnedTargets = { warmth: 0, dimming: 0 };
+    const learningMockHour = 21.5;
+
+    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+    const snapTime = value => Math.round(value * 4) / 4;
+    const hourToX = hour => axis.left + ((hour - axis.start) / (axis.end - axis.start)) * (axis.right - axis.left);
+    const xToHour = x => axis.start + ((x - axis.left) / (axis.right - axis.left)) * (axis.end - axis.start);
+    const degreesToRadians = degrees => degrees * Math.PI / 180;
+    const formatTime = hour => {
+      const normalized = ((hour % 24) + 24) % 24;
+      const whole = Math.floor(normalized);
+      const minutes = Math.round((normalized - whole) * 60);
+      return `${String(whole).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    };
+    const formatDuration = duration => Number.isInteger(duration) ? `${duration} h` : `${duration.toFixed(2).replace(/0$/, '')} h`;
+    const dayOfYear = date => Math.floor((Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(date.getFullYear(), 0, 0)) / 86400000);
+    const solarEvents = (date, coordinates) => {
+      const gamma = (2 * Math.PI / 365) * (dayOfYear(date) - 1);
+      const equationOfTime = 229.18 * (
+        .000075 + .001868 * Math.cos(gamma) - .032077 * Math.sin(gamma)
+        - .014615 * Math.cos(2 * gamma) - .040849 * Math.sin(2 * gamma)
+      );
+      const declination = .006918 - .399912 * Math.cos(gamma) + .070257 * Math.sin(gamma)
+        - .006758 * Math.cos(2 * gamma) + .000907 * Math.sin(2 * gamma)
+        - .002697 * Math.cos(3 * gamma) + .00148 * Math.sin(3 * gamma);
+      const localNoon = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12);
+      const offsetMinutes = -localNoon.getTimezoneOffset();
+      const solarNoon = 720 - 4 * coordinates.longitude - equationOfTime + offsetMinutes;
+      const latitude = degreesToRadians(clamp(coordinates.latitude, -89.999999, 89.999999));
+      const cosineHourAngle = zenith => (
+        Math.cos(degreesToRadians(zenith)) - Math.sin(latitude) * Math.sin(declination)
+      ) / (Math.cos(latitude) * Math.cos(declination));
+      const sunriseCosine = cosineHourAngle(90.833);
+      if (sunriseCosine > 1) return { condition: 'polarNight', solarNoon };
+      if (sunriseCosine < -1) return { condition: 'polarDay', solarNoon };
+      const deltaForZenith = zenith => {
+        const cosine = cosineHourAngle(zenith);
+        return cosine >= -1 && cosine <= 1 ? 4 * (Math.acos(cosine) * 180 / Math.PI) : null;
+      };
+      const sunDelta = deltaForZenith(90.833);
+      const civilDelta = deltaForZenith(96) ?? sunDelta;
+      return {
+        condition: 'normal',
+        dawn: solarNoon - civilDelta,
+        sunrise: solarNoon - sunDelta,
+        solarNoon,
+        sunset: solarNoon + sunDelta,
+        dusk: solarNoon + civilDelta
+      };
+    };
+    const formatSolarTime = (minutes, date) => {
+      const value = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      value.setMinutes(Math.round(minutes));
+      return new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(value);
+    };
+    const positionSolarMarker = (name, hour, label) => {
+      const marker = solarMarkers.get(name);
+      if (!marker) return;
+      const visible = hour >= axis.start - .5 && hour <= axis.end + .5;
+      marker.style.display = visible ? '' : 'none';
+      if (!visible) return;
+      marker.setAttribute('transform', `translate(${hourToX(hour) - 27} ${solarMarkerY})`);
+      if (label) {
+        marker.querySelector('.solar-time').textContent = label;
+        marker.setAttribute('aria-label', `${name.includes('sunset') ? 'Sunset' : 'Sunrise'} ${label}`);
+      }
+    };
+    const solarPercent = hour => `${clamp((hourToX(hour) / 1600) * 100, 0, 100).toFixed(2)}%`;
+    const renderNightWindowClip = (dusk, nextDawn) => {
+      const start = clamp(hourToX(dusk), 0, 1600);
+      const end = clamp(hourToX(nextDawn), 0, 1600);
+      nightWindowClip.setAttribute('x', start);
+      nightWindowClip.setAttribute('width', Math.max(0, end - start));
+    };
+    const renderVillageLighting = (sunset, dusk, nextDawn, nextSunrise) => {
+      villageLighting.style.opacity = '1';
+      const rawPositions = [
+        0,
+        hourToX(sunset) - 170,
+        hourToX(sunset) + 35,
+        hourToX(dusk + .65),
+        hourToX(nextDawn - .55),
+        hourToX(nextSunrise),
+        1600
+      ];
+      const positions = rawPositions.reduce((result, position) => {
+        result.push(clamp(Math.max(position, result.at(-1) ?? 0), 0, 1600));
+        return result;
+      }, []);
+      ['day', 'late-day', 'sunset', 'night', 'pre-dawn', 'sunrise', 'next-day'].forEach((name, index) => {
+        const offset = `${(positions[index] / 16).toFixed(2)}%`;
+        villageLightStops[name].setAttribute('offset', offset);
+        villageHouseStops[name].setAttribute('offset', offset);
+        villageHouseStops[name].setAttribute('stop-color', villageHouseColors[name]);
+      });
+    };
+    const renderLandscapeLighting = (sunrise, sunset, dusk, nextDawn, nextSunrise) => {
+      landscape.dataset.solarCondition = 'normal';
+      const sunriseX = hourToX(sunrise);
+      const sunsetX = hourToX(sunset);
+      const nextSunriseX = hourToX(nextSunrise);
+      const dayStart = Math.max(-120, sunriseX - 145);
+      const dayEnd = Math.min(1720, sunsetX + 145);
+      [sceneLights.terrainDay, sceneLights.lakeDay].forEach(light => {
+        light.setAttribute('x', dayStart);
+        light.setAttribute('width', Math.max(220, dayEnd - dayStart));
+        light.setAttribute('opacity', light === sceneLights.terrainDay ? '.9' : '.95');
+      });
+      [sceneLights.terrainSunrise, sceneLights.lakeSunrise].forEach(light => light.setAttribute('cx', sunriseX));
+      [sceneLights.terrainSunset, sceneLights.lakeSunset].forEach(light => light.setAttribute('cx', sunsetX));
+      [sceneLights.terrainNextSunrise, sceneLights.lakeNextSunrise].forEach(light => light.setAttribute('cx', nextSunriseX));
+      [sceneLights.terrainSunrise, sceneLights.terrainSunset, sceneLights.terrainNextSunrise,
+        sceneLights.lakeSunrise, sceneLights.lakeSunset, sceneLights.lakeNextSunrise]
+        .forEach(light => light.setAttribute('opacity', '1'));
+      renderVillageLighting(sunset, dusk, nextDawn, nextSunrise);
+    };
+    const renderPolarLandscape = condition => {
+      landscape.dataset.solarCondition = condition;
+      const polarDay = condition === 'polarDay';
+      [sceneLights.terrainDay, sceneLights.lakeDay].forEach(light => {
+        light.setAttribute('x', '-80');
+        light.setAttribute('width', '1760');
+        light.setAttribute('opacity', polarDay ? '.82' : '0');
+      });
+      [sceneLights.terrainSunrise, sceneLights.terrainSunset, sceneLights.terrainNextSunrise,
+        sceneLights.lakeSunrise, sceneLights.lakeSunset, sceneLights.lakeNextSunrise]
+        .forEach(light => light.setAttribute('opacity', '0'));
+      villageLighting.style.opacity = polarDay ? '1' : '.12';
+      Object.values(villageHouseStops).forEach(stop => stop.setAttribute('stop-color', polarDay ? '#456474' : '#071522'));
+      nightWindowClip.setAttribute('x', '0');
+      nightWindowClip.setAttribute('width', polarDay ? '0' : '1600');
+    };
+    const renderSolarAtmosphere = (dawn, sunrise, sunset, dusk, nextDawn, nextSunrise) => {
+      atmosphere.dataset.solarCondition = 'normal';
+      const positions = {
+        '--dawn-x': dawn,
+        '--sunrise-x': sunrise,
+        '--day-mid-x': (sunrise + sunset) / 2,
+        '--sunset-x': sunset,
+        '--dusk-x': dusk,
+        '--moon-x': (sunset + nextSunrise) / 2,
+        '--next-dawn-x': nextDawn,
+        '--next-sunrise-x': nextSunrise
+      };
+      Object.entries(positions).forEach(([name, hour]) => chart.style.setProperty(name, solarPercent(hour)));
+      renderLandscapeLighting(sunrise, sunset, dusk, nextDawn, nextSunrise);
+      renderNightWindowClip(dusk, nextSunrise + 1);
+    };
+    const renderSolarContext = coordinates => {
+      const today = new Date();
+      today.setHours(12, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const current = solarEvents(today, coordinates);
+      const next = solarEvents(tomorrow, coordinates);
+      solarMarkers.forEach(marker => { marker.style.display = 'none'; });
+      const zone = new Intl.DateTimeFormat(undefined, { timeZoneName: 'short' }).formatToParts(new Date()).find(part => part.type === 'timeZoneName')?.value ?? '';
+      if (current.condition === 'normal' && next.condition === 'normal') {
+        const dawn = current.dawn / 60;
+        const sunrise = current.sunrise / 60;
+        const sunset = current.sunset / 60;
+        const dusk = current.dusk / 60;
+        const nextDawn = 24 + next.dawn / 60;
+        const nextSunrise = 24 + next.sunrise / 60;
+        positionSolarMarker('sunrise', sunrise, formatSolarTime(current.sunrise, today));
+        positionSolarMarker('sun', (sunrise + sunset) / 2);
+        positionSolarMarker('sunset', sunset, formatSolarTime(current.sunset, today));
+        positionSolarMarker('moon', (sunset + nextSunrise) / 2);
+        positionSolarMarker('next-sunrise', nextSunrise, formatSolarTime(next.sunrise, tomorrow));
+        solarMorningCutoff = sunrise;
+        renderSolarAtmosphere(dawn, sunrise, sunset, dusk, nextDawn, nextSunrise);
+        Object.keys(effects).forEach(renderEffect);
+        renderOutputMetrics();
+        renderLearningControls();
+        solarStatusLabel.textContent = `Local sunlight${zone ? ` · ${zone}` : ''}`;
+        return;
+      }
+      solarMorningCutoff = 6;
+      if (current.condition === 'polarDay') {
+        atmosphere.dataset.solarCondition = 'polarDay';
+        renderPolarLandscape('polarDay');
+        positionSolarMarker('sun', current.solarNoon / 60);
+        solarStatusLabel.textContent = `Polar day${zone ? ` · ${zone}` : ''}`;
+      } else {
+        atmosphere.dataset.solarCondition = 'polarNight';
+        renderPolarLandscape('polarNight');
+        positionSolarMarker('moon', (axis.start + axis.end) / 2);
+        solarStatusLabel.textContent = `Polar night${zone ? ` · ${zone}` : ''}`;
+      }
+    };
+    const loadSolarContext = () => {
+      const fallback = { latitude: 59.437, longitude: 24.7536 };
+      let saved = null;
+      try { saved = JSON.parse(localStorage.getItem('chillscreen.solarCoordinates')); } catch {}
+      const valid = value => value && Number.isFinite(value.latitude) && Number.isFinite(value.longitude)
+        && Math.abs(value.latitude) <= 90 && Math.abs(value.longitude) <= 180;
+      renderSolarContext(valid(saved) ? saved : fallback);
+      if (valid(saved) || !navigator.geolocation) return;
+      navigator.geolocation.getCurrentPosition(position => {
+        const coordinates = { latitude: position.coords.latitude, longitude: position.coords.longitude };
+        if (!valid(coordinates)) return;
+        try { localStorage.setItem('chillscreen.solarCoordinates', JSON.stringify(coordinates)); } catch {}
+        renderSolarContext(coordinates);
+      }, () => {}, { enableHighAccuracy: false, maximumAge: 604800000, timeout: 8000 });
+    };
+    const eventPoint = event => {
+      const point = svg.createSVGPoint();
+      point.x = event.clientX;
+      point.y = event.clientY;
+      return point.matrixTransform(svg.getScreenCTM().inverse());
+    };
+    const boundsFor = name => {
+      if (name === 'wake') return [Math.max(4.5, schedule.bedtime - (24 - minimumSleepInterval)), Math.min(12, schedule.evening - 4)];
+      if (name === 'evening') return [Math.max(15, schedule.wake + 4), schedule.bedtime - 1];
+      return [schedule.evening + 1, Math.min(30.5, schedule.wake + 24 - minimumSleepInterval)];
+    };
+    const sleepDuration = () => schedule.wake + 24 - schedule.bedtime;
+    const renderSleepDuration = () => {
+      sleepDurationLabel.textContent = `Sleep ${formatDuration(sleepDuration())}`;
+    };
+    const renderHourLabelVisibility = () => {
+      const markerPositions = Object.values(schedule).map(hourToX);
+      hourLabels.forEach(label => {
+        const x = Number(label.getAttribute('x'));
+        label.classList.toggle('is-occluded', markerPositions.some(markerX => Math.abs(markerX - x) < 38));
+      });
+    };
+    const renderMarker = marker => {
+      const name = marker.dataset.event;
+      const label = formatTime(schedule[name]);
+      const markerX = hourToX(schedule[name]);
+      marker.setAttribute('transform', `translate(${markerX})`);
+      const tooltip = marker.querySelector('.marker-tooltip');
+      if (tooltip) {
+        const width = Number(tooltip.dataset.tooltipWidth);
+        const offset = clamp(-width / 2, 18 - markerX, 1582 - markerX - width);
+        tooltip.setAttribute('transform', `translate(${offset} 0)`);
+      }
+      marker.querySelector('.event-time').textContent = label;
+      marker.setAttribute('aria-label', `${marker.querySelector('.event-name').textContent} ${label}`);
+      renderHourLabelVisibility();
+    };
+    const curvePath = name => {
+      const effect = effects[name];
+      const start = hourToX(schedule.evening);
+      const end = hourToX(effect.time);
+      const morningCutoff = Math.min(schedule.wake, solarMorningCutoff);
+      const wake = hourToX(morningCutoff);
+      const nextWake = hourToX(morningCutoff + 24);
+      const delta = Math.max(18, end - start);
+      const dropWidth = 7;
+      const baseline = effect.baseline;
+      const edgeLeft = hourToX(axis.start - 1.25);
+      const edgeRight = hourToX(axis.end + 1.25);
+      return [
+        `M${edgeLeft} ${effect.y}`,
+        `L${wake - dropWidth} ${effect.y}`,
+        `C${wake - dropWidth * .35} ${effect.y} ${wake - dropWidth * .35} ${baseline} ${wake} ${baseline}`,
+        `L${start} ${baseline}`,
+        `C${start + delta * .3} ${baseline} ${end - delta * .28} ${effect.y} ${end} ${effect.y}`,
+        `L${nextWake - dropWidth} ${effect.y}`,
+        `C${nextWake - dropWidth * .35} ${effect.y} ${nextWake - dropWidth * .35} ${baseline} ${nextWake} ${baseline}`,
+        `L${edgeRight} ${baseline}`
+      ].join('');
+    };
+    const uniquePoints = points => {
+      const byTime = new Map();
+      points.forEach(([time, value]) => byTime.set(time.toFixed(4), [time, value]));
+      return [...byTime.values()].sort((a, b) => a[0] - b[0]);
+    };
+    const repeatCycle = points => uniquePoints([-24, 0, 24].flatMap(shift => points.map(([time, value]) => [time + shift, value])));
+    const pchipSlopes = points => {
+      const count = points.length;
+      const h = Array.from({ length: count - 1 }, (_, index) => points[index + 1][0] - points[index][0]);
+      const delta = h.map((width, index) => (points[index + 1][1] - points[index][1]) / width);
+      const slopes = Array(count).fill(0);
+      if (count === 2) return [delta[0], delta[0]];
+      for (let index = 1; index < count - 1; index += 1) {
+        if (delta[index - 1] === 0 || delta[index] === 0 || Math.sign(delta[index - 1]) !== Math.sign(delta[index])) continue;
+        const firstWeight = 2 * h[index] + h[index - 1];
+        const secondWeight = h[index] + 2 * h[index - 1];
+        slopes[index] = (firstWeight + secondWeight) / (firstWeight / delta[index - 1] + secondWeight / delta[index]);
+      }
+      const endpoint = (firstH, secondH, firstDelta, secondDelta) => {
+        let slope = ((2 * firstH + secondH) * firstDelta - firstH * secondDelta) / (firstH + secondH);
+        if (Math.sign(slope) !== Math.sign(firstDelta)) slope = 0;
+        else if (Math.sign(firstDelta) !== Math.sign(secondDelta) && Math.abs(slope) > Math.abs(3 * firstDelta)) slope = 3 * firstDelta;
+        return slope;
+      };
+      slopes[0] = endpoint(h[0], h[1], delta[0], delta[1]);
+      slopes[count - 1] = endpoint(h[count - 2], h[count - 3], delta[count - 2], delta[count - 3]);
+      return slopes;
+    };
+    const pchipValue = (points, slopes, time) => {
+      let index = points.findIndex((point, pointIndex) => pointIndex < points.length - 1 && time <= points[pointIndex + 1][0]);
+      if (index < 0) index = points.length - 2;
+      const [x0, y0] = points[index];
+      const [x1, y1] = points[index + 1];
+      const width = x1 - x0;
+      const t = clamp((time - x0) / width, 0, 1);
+      const t2 = t * t;
+      const t3 = t2 * t;
+      return clamp(
+        (2 * t3 - 3 * t2 + 1) * y0 +
+        (t3 - 2 * t2 + t) * width * slopes[index] +
+        (-2 * t3 + 3 * t2) * y1 +
+        (t3 - t2) * width * slopes[index + 1],
+        0,
+        1
+      );
+    };
+    const profilePath = (points, top, bottom) => {
+      const slopes = pchipSlopes(points);
+      const start = axis.start - 1.25;
+      const end = axis.end + 1.25;
+      const samples = 295;
+      return Array.from({ length: samples + 1 }, (_, index) => {
+        const time = start + ((end - start) * index) / samples;
+        const level = pchipValue(points, slopes, time);
+        const x = hourToX(time).toFixed(1);
+        const y = (bottom - level * (bottom - top)).toFixed(1);
+        return `${index ? 'L' : 'M'}${x} ${y}`;
+      }).join('');
+    };
+    const cortisolPoints = () => {
+      const wake = schedule.wake;
+      const sleep = sleepDuration();
+      const previousBedtime = schedule.bedtime - 24;
+      const nightMinimum = Math.max(wake - 7, previousBedtime);
+      const earlyRise = wake - Math.min(5, sleep * .75);
+      const visibleRise = wake - Math.min(3, sleep * .5);
+      const finalAcceleration = wake - Math.min(1, sleep * .2);
+      const minimumApproach = Math.max(previousBedtime, nightMinimum - .75);
+      const minimumFloorEnd = Math.min(earlyRise, nightMinimum + .35);
+      return repeatCycle([
+        [minimumApproach, .015], [nightMinimum, 0], [minimumFloorEnd, 0],
+        [earlyRise, .08], [visibleRise, .25], [finalAcceleration, .55],
+        [wake, .725], [wake + 2 / 3, 1], [wake + 2, .8], [wake + 5, .52],
+        [wake + 9, .27], [wake + 13, .1], [nightMinimum + 24, 0]
+      ]);
+    };
+    const melatoninPoints = () => {
+      const dlmo = schedule.bedtime - 1.9167;
+      let wake = schedule.wake + 24;
+      while (wake < dlmo) wake += 24;
+      const dlmOff = wake + .5833;
+      const midpoint = (dlmo + dlmOff) / 2;
+      const profileDuration = dlmOff - dlmo;
+      const earlyRise = dlmo + Math.min(2, profileDuration * .24);
+      const upperRise = dlmo + Math.min(4, profileDuration * .4);
+      const latePlateau = midpoint + (wake - midpoint) * .55;
+      const cycleStart = dlmo - 1;
+      return repeatCycle([
+        [cycleStart, 0], [dlmo - .5, .02], [dlmo, .1], [earlyRise, .55],
+        [upperRise, .85], [midpoint, 1], [latePlateau, .8], [wake, .25],
+        [dlmOff, .1], [dlmOff + .5, .02], [dlmOff + 1, 0], [cycleStart + 24, 0]
+      ]);
+    };
+    const automaticMelatoninPoints = () => repeatCycle([
+      [0.5, .78], [1.5, .92], [2.5, 1], [4, .9], [5.5, .68], [7, .25],
+      [7.5833, .1], [8.0833, .02], [9, 0], [18, 0], [20.5, .02],
+      [21.0833, .1], [23, .48]
+    ]);
+    const automaticCortisolPoints = () => repeatCycle([
+      [.25, 0], [2, .05], [4, .2], [6, .5], [7, .72], [7.6667, 1],
+      [8.5, .9], [10, .72], [13, .48], [17, .25], [20, .1], [22.5, .03]
+    ]);
+    const renderHormones = () => {
+      const profiles = {
+        cortisol: profilePath(cortisolPoints(), curveScale.top, curveScale.bottom),
+        melatonin: profilePath(melatoninPoints(), curveScale.top, curveScale.bottom)
+      };
+      Object.entries(profiles).forEach(([name, pathData]) => {
+        document.querySelectorAll(`path.${name}`).forEach(path => path.setAttribute('d', pathData));
+      });
+    };
+    const renderEffect = name => {
+      const effect = effects[name];
+      effect.time = clamp(effect.time, schedule.evening + .25, Math.min(schedule.evening + 4, 30.5));
+      effect.y = clamp(effect.y, effect.minY, effect.maxY);
+      const handle = handles.find(item => item.dataset.effect === name);
+      const duration = effect.time - schedule.evening;
+      const level = Math.round(((effect.maxY - effect.y) / (effect.maxY - effect.minY)) * 100);
+      const title = name === 'warmth' ? 'Warmth' : 'Dimming';
+      handle.setAttribute('transform', `translate(${hourToX(effect.time)} ${effect.y})`);
+      const card = handle.querySelector('.effect-card');
+      const cardX = name === 'warmth' ? -184 : 16;
+      card.setAttribute('transform', `translate(${cardX} -132)`);
+      card.querySelector('.card-duration').textContent = formatDuration(duration);
+      handle.querySelector('.handle-label text').textContent = `${title} · ${formatDuration(duration)} · ${level}%`;
+      handle.setAttribute('aria-label', `${title} transition ${formatDuration(duration)}, level ${level} percent`);
+      document.querySelectorAll(`path.${name}:not(.learning-base)`).forEach(path => path.setAttribute('d', curvePath(name)));
+      renderOutputMetrics();
+    };
+    const raiseEffect = name => {
+      const handle = handles.find(item => item.dataset.effect === name);
+      handle?.parentNode.appendChild(handle);
+    };
+    const setEventTime = (name, requested) => {
+      const [min, max] = boundsFor(name);
+      const previousEvening = schedule.evening;
+      schedule[name] = clamp(snapTime(requested), min, max);
+      if (currentMode === 'automatic' && name === 'evening') {
+        const delta = schedule.evening - previousEvening;
+        Object.keys(effects).forEach(effectName => {
+          effects[effectName].time += delta;
+        });
+      }
+      renderMarker(markers.find(marker => marker.dataset.event === name));
+      renderSleepDuration();
+      renderHormones();
+      Object.keys(effects).forEach(renderEffect);
+      if (!profileAnimating) {
+        if (currentMode === 'manual') persistManualProfile();
+        else persistAutomaticSchedule();
+      }
+    };
+    const setEffect = (name, requestedTime, requestedY) => {
+      const effect = effects[name];
+      effect.time = clamp(snapTime(requestedTime), schedule.evening + .25, Math.min(schedule.evening + 4, 30.5));
+      effect.y = clamp(Math.round(requestedY / 2) * 2, effect.minY, effect.maxY);
+      renderEffect(name);
+      if (currentMode === 'manual' && !profileAnimating) persistManualProfile();
+    };
+    const finishDrag = () => {
+      activeMarker?.classList.remove('is-active');
+      activeHandle?.classList.remove('is-active');
+      activeMarker = null;
+      activeHandle = null;
+      activePointerId = null;
+    };
+
+    const isManualMode = () => currentMode === 'manual';
+    const effectPeak = name => Math.round(((effects[name].maxY - effects[name].y) / (effects[name].maxY - effects[name].minY)) * 100);
+    const effectYForLevel = (name, level) => effects[name].maxY - clamp(level, 0, 100) / 100 * (effects[name].maxY - effects[name].minY);
+    const captureProfile = () => ({
+      schedule: { ...schedule },
+      effects: Object.fromEntries(Object.keys(effects).map(name => [name, { time: effects[name].time, level: effectPeak(name) }]))
+    });
+    const validProfile = profile => profile
+      && ['wake', 'evening', 'bedtime'].every(name => Number.isFinite(profile.schedule?.[name]))
+      && ['warmth', 'dimming'].every(name => Number.isFinite(profile.effects?.[name]?.time) && Number.isFinite(profile.effects?.[name]?.level));
+    const persistManualProfile = () => {
+      manualProfile = captureProfile();
+      try { localStorage.setItem('chillscreen.manualProfile', JSON.stringify(manualProfile)); } catch {}
+      postNative({ type: 'setManualProfile', profile: manualProfile });
+      if (previewingMax) {
+        postNative({
+          type: 'previewMax',
+          enabled: true,
+          warmth: effectPeak('warmth') / 100,
+          dimming: effectPeak('dimming') / 100
+        });
+      }
+    };
+    const persistAutomaticSchedule = () => {
+      automaticProfile.schedule = { ...schedule };
+      postNative({ type: 'setAutomaticSchedule', schedule: { ...schedule } });
+    };
+    const loadManualProfile = () => {
+      try {
+        const profile = JSON.parse(localStorage.getItem('chillscreen.manualProfile'));
+        return validProfile(profile) ? profile : null;
+      } catch { return null; }
+    };
+    const currentCycleHour = () => {
+      if (learningMockState) return learningMockHour;
+      const now = new Date();
+      let hour = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
+      if (hour < axis.start) hour += 24;
+      return hour;
+    };
+    const renderCurrentTime = () => {
+      if (!currentTimeMarker) return;
+      const now = new Date();
+      const hour = currentCycleHour();
+      currentTimeMarker.setAttribute('transform', `translate(${hourToX(hour)} ${nativeHost ? 40 : 0})`);
+      currentTimeMarker.querySelector('text').textContent = learningMockState ? '21:30' : new Intl.DateTimeFormat(undefined, {
+        hour: '2-digit', minute: '2-digit', hour12: false
+      }).format(now);
+    };
+    const smoothstep = value => value * value * (3 - 2 * value);
+    const effectLevelAtHour = (name, peak, hour) => {
+      const rampStart = schedule.evening;
+      const rampEnd = effects[name].time;
+      const morningCutoff = Math.min(schedule.wake, solarMorningCutoff) + 24;
+      if (hour < rampStart || hour >= morningCutoff) return 0;
+      if (hour >= rampEnd) return peak;
+      const progress = clamp((hour - rampStart) / Math.max(.25, rampEnd - rampStart), 0, 1);
+      return Math.round(peak * smoothstep(progress));
+    };
+    const currentEffectLevel = (name, peak) => effectLevelAtHour(name, peak, currentCycleHour());
+    const renderPreviewLayer = peaks => {
+      if (nativeHost) {
+        previewLayer.classList.remove('is-active');
+        previewLayer.style.background = 'transparent';
+        return;
+      }
+      const warmthAlpha = (peaks.warmth / 100 * .16).toFixed(3);
+      const dimmingAlpha = (peaks.dimming / 100 * .42).toFixed(3);
+      previewLayer.style.background = `linear-gradient(rgba(242,105,48,${warmthAlpha}),rgba(242,105,48,${warmthAlpha})),linear-gradient(rgba(0,0,0,${dimmingAlpha}),rgba(0,0,0,${dimmingAlpha}))`;
+      previewLayer.classList.toggle('is-active', previewingMax);
+    };
+    const renderOutputMetrics = () => {
+      const manual = isManualMode();
+      const peaks = manual
+        ? { warmth: effectPeak('warmth'), dimming: effectPeak('dimming') }
+        : {
+            warmth: Math.round(automaticProfile.effects.warmth.level),
+            dimming: Math.round(automaticProfile.effects.dimming.level)
+          };
+      Object.keys(outputElements).forEach(name => {
+        const nativeCurrent = nativeCurrentLevels?.[name];
+        const current = previewingMax
+          ? peaks[name]
+          : nativeHost && Number.isFinite(nativeCurrent)
+            ? Math.round(nativeCurrent)
+            : currentEffectLevel(name, peaks[name]);
+        outputElements[name].now.textContent = `${current}%`;
+        outputElements[name].peak.textContent = `${peaks[name]}%`;
+        outputElements[name].peakLabel.textContent = 'Max';
+      });
+      document.body.classList.toggle('automatic-mode', !manual);
+      previewToggle.setAttribute('aria-checked', previewingMax ? 'true' : 'false');
+      previewToggle.classList.toggle('is-disabled', !manual);
+      previewToggle.setAttribute('aria-disabled', manual ? 'false' : 'true');
+      previewToggle.setAttribute('aria-label', previewingMax ? 'Stop previewing maximum screen effects' : 'Preview maximum screen effects');
+      previewLabel.textContent = previewingMax ? 'Previewing max' : 'Preview max';
+      renderPreviewLayer(peaks);
+    };
+    const setPreview = enabled => {
+      previewingMax = Boolean(enabled && isManualMode());
+      renderOutputMetrics();
+      postNative({
+        type: 'previewMax',
+        enabled: previewingMax,
+        warmth: effectPeak('warmth') / 100,
+        dimming: effectPeak('dimming') / 100
+      });
+    };
+    const isLearningWindowOpen = () => {
+      const hour = currentCycleHour();
+      const morningCutoff = Math.min(schedule.wake, solarMorningCutoff) + 24;
+      return hour >= schedule.evening && hour < morningCutoff;
+    };
+    const initializeLearningTargets = () => {
+      if (learningTargetsInitialized) return;
+      const hour = currentCycleHour();
+      Object.keys(learnedTargets).forEach(name => {
+        learnedTargets[name] = effectLevelAtHour(name, effectPeak(name), hour);
+      });
+      learningTargetsInitialized = true;
+    };
+    const renderLearningControls = () => {
+      if (!learningSupported) return;
+      const windowOpen = isLearningWindowOpen();
+      const automatic = currentMode === 'automatic';
+      const active = learningEnabled && learningRecordingAvailable && automatic && windowOpen && (!nativeHost || nativeEnabled);
+      document.body.classList.toggle('learning-enabled', learningEnabled);
+      document.body.classList.toggle('manual-learning-disabled', !automatic);
+      document.body.classList.toggle('learning-window-open', windowOpen);
+      learningToggle.setAttribute('aria-checked', automatic && learningEnabled ? 'true' : 'false');
+      learningToggle.classList.toggle('is-disabled', !automatic);
+      learningToggle.setAttribute('aria-disabled', automatic ? 'false' : 'true');
+      learningToggleLabel.textContent = 'Learning';
+      learningToggle.setAttribute('aria-label', learningEnabled ? 'Pause Learning' : 'Start Learning');
+      learningHandles.forEach(handle => {
+        handle.setAttribute('tabindex', active ? '0' : '-1');
+        handle.setAttribute('aria-disabled', active ? 'false' : 'true');
+      });
+      if (!active) {
+        if (learningPreviewActive) cancelLearningCommit(true);
+        return;
+      }
+
+      initializeLearningTargets();
+      const x = hourToX(currentCycleHour());
+      Object.keys(learnedTargets).forEach(name => {
+        const handle = learningHandles.find(item => item.dataset.learningEffect === name);
+        const y = effectYForLevel(name, learnedTargets[name]);
+        handle.setAttribute('transform', `translate(${x} ${y})`);
+        handle.setAttribute('aria-valuenow', String(Math.round(learnedTargets[name])));
+        handle.querySelector('.learning-value').textContent = `${Math.round(learnedTargets[name])}%`;
+      });
+    };
+    const renderAmbientLightControl = () => {
+      const manual = isManualMode();
+      ambientLightToggle.setAttribute('aria-checked', !manual && ambientLightEnabled ? 'true' : 'false');
+      ambientLightToggle.disabled = !ambientLightAvailable;
+      ambientLightToggle.classList.toggle('is-disabled', manual || !ambientLightAvailable);
+      ambientLightToggle.setAttribute('aria-disabled', !manual && ambientLightAvailable ? 'false' : 'true');
+      ambientLightReading.textContent = Number.isFinite(ambientLightLux)
+        ? `${ambientLightLux < 10 ? ambientLightLux.toFixed(1) : Math.round(ambientLightLux)} lux`
+        : ambientLightStatus === 'unsupported'
+          ? 'Sensor unavailable'
+          : 'Waiting for sensor';
+      document.body.classList.toggle('ambient-light-enabled', ambientLightEnabled);
+    };
+    const setLearningToastVisible = (visible, hour = currentCycleHour()) => {
+      if (visible) learningToastCopy.textContent = `Learned for evenings around ${formatTime(hour)}`;
+      learningToast.classList.toggle('is-visible', visible);
+      learningToast.setAttribute('aria-hidden', visible ? 'false' : 'true');
+    };
+    const cancelLearningCommit = (clearPreview = false) => {
+      if (learningCommitTimer !== null) window.clearTimeout(learningCommitTimer);
+      learningCommitTimer = null;
+      pendingLearningCommit = null;
+      if (clearPreview) {
+        if (learningPreviewActive) postNative({ type: 'clearLearningPreview' });
+        learningPreviewActive = false;
+      }
+    };
+    const commitLearningExample = () => {
+      learningCommitTimer = null;
+      if (!learningEnabled || !learningRecordingAvailable || currentMode !== 'automatic' || !isLearningWindowOpen() || (nativeHost && !nativeEnabled)) {
+        pendingLearningCommit = null;
+        return;
+      }
+      const adjustment = pendingLearningCommit ?? {
+        hour: currentCycleHour(),
+        warmth: learnedTargets.warmth,
+        dimming: learnedTargets.dimming
+      };
+      pendingLearningCommit = null;
+      // The committed value becomes the exact preference for this whole night.
+      // The native state pushed below may now safely confirm that same value.
+      learningPreviewActive = false;
+      postNative({
+        type: 'commitLearningExample',
+        hour: adjustment.hour,
+        warmth: adjustment.warmth / 100,
+        dimming: adjustment.dimming / 100
+      });
+      setLearningToastVisible(true, adjustment.hour);
+    };
+    const previewLearningTargets = () => {
+      if (!learningEnabled || !learningRecordingAvailable || currentMode !== 'automatic' || !isLearningWindowOpen() || (nativeHost && !nativeEnabled)) return;
+      setLearningToastVisible(false);
+      postNative({
+        type: 'learningPreview',
+        warmth: learnedTargets.warmth / 100,
+        dimming: learnedTargets.dimming / 100
+      });
+      learningPreviewActive = true;
+      cancelLearningCommit();
+      pendingLearningCommit = {
+        hour: currentCycleHour(),
+        warmth: learnedTargets.warmth,
+        dimming: learnedTargets.dimming
+      };
+      learningCommitTimer = window.setTimeout(commitLearningExample, 10000);
+    };
+    const setLearningOnboardingOpen = enabled => {
+      learningOnboarding.classList.toggle('is-open', enabled);
+      learningOnboarding.setAttribute('aria-hidden', enabled ? 'false' : 'true');
+    };
+    const setLearningEnabled = (enabled, onboardingCompleted = learningOnboardingCompleted) => {
+      learningEnabled = Boolean(enabled);
+      learningOnboardingCompleted = Boolean(onboardingCompleted);
+      learningTargetsInitialized = false;
+      if (!learningEnabled) {
+        cancelLearningCommit(true);
+        setLearningToastVisible(false);
+      }
+      setLearningOnboardingOpen(false);
+      if (learningEnabled && currentMode !== 'automatic') setMode('automatic');
+      else renderActiveProfile();
+      postNative({
+        type: 'setLearning',
+        enabled: learningEnabled,
+        onboardingCompleted: learningOnboardingCompleted
+      });
+    };
+    const setLearningTarget = (name, requestedY) => {
+      learnedTargets[name] = Math.round(clamp((curveScale.bottom - requestedY) / (curveScale.bottom - curveScale.top) * 100, 0, 100));
+      renderLearningControls();
+      previewLearningTargets();
+    };
+    const finishLearningAdjustment = () => {
+      activeLearningHandle?.classList.remove('is-active');
+      activeLearningHandle = null;
+      learningPointerId = null;
+      learningMouseDragActive = false;
+    };
+    const renderActiveProfile = () => {
+      markers.forEach(renderMarker);
+      renderSleepDuration();
+      renderHormones();
+      Object.keys(effects).forEach(renderEffect);
+      renderLearningControls();
+    };
+    const applyProfileInstantly = profile => {
+      Object.assign(schedule, profile.schedule);
+      Object.keys(effects).forEach(name => {
+        effects[name].time = profile.effects[name].time;
+        effects[name].y = effectYForLevel(name, profile.effects[name].level);
+      });
+      renderActiveProfile();
+    };
+    const animateToProfile = profile => {
+      if (profileAnimationFrame) cancelAnimationFrame(profileAnimationFrame);
+      const start = captureProfile();
+      const duration = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 460;
+      const startedAt = performance.now();
+      profileAnimating = true;
+      const frame = now => {
+        const progress = duration ? clamp((now - startedAt) / duration, 0, 1) : 1;
+        const eased = smoothstep(progress);
+        Object.keys(schedule).forEach(name => {
+          schedule[name] = start.schedule[name] + (profile.schedule[name] - start.schedule[name]) * eased;
+        });
+        Object.keys(effects).forEach(name => {
+          effects[name].time = start.effects[name].time + (profile.effects[name].time - start.effects[name].time) * eased;
+          const level = start.effects[name].level + (profile.effects[name].level - start.effects[name].level) * eased;
+          effects[name].y = effectYForLevel(name, level);
+        });
+        renderActiveProfile();
+        if (progress < 1) {
+          profileAnimationFrame = requestAnimationFrame(frame);
+          return;
+        }
+        profileAnimationFrame = null;
+        profileAnimating = false;
+        applyProfileInstantly(profile);
+      };
+      profileAnimationFrame = requestAnimationFrame(frame);
+    };
+    const updateModeUI = () => {
+      tabs.forEach(item => {
+        const selected = item.dataset.mode === currentMode;
+        item.classList.toggle('active', selected);
+        item.setAttribute('aria-selected', selected ? 'true' : 'false');
+      });
+      const manual = isManualMode();
+      markers.forEach(control => {
+        control.setAttribute('tabindex', '0');
+        control.setAttribute('aria-disabled', 'false');
+      });
+      handles.forEach(control => {
+        control.setAttribute('tabindex', manual ? '0' : '-1');
+        control.setAttribute('aria-disabled', manual ? 'false' : 'true');
+      });
+      document.body.classList.toggle('automatic-mode', !manual);
+      learningToggle.classList.toggle('is-disabled', manual);
+      ambientLightToggle.classList.toggle('is-disabled', manual || !ambientLightAvailable);
+      previewToggle.classList.toggle('is-disabled', !manual);
+      learningToggle.setAttribute('aria-disabled', manual ? 'true' : 'false');
+      ambientLightToggle.setAttribute('aria-disabled', !manual && ambientLightAvailable ? 'false' : 'true');
+      previewToggle.setAttribute('aria-disabled', manual ? 'false' : 'true');
+    };
+    const setMode = requestedMode => {
+      const nextMode = requestedMode === 'automatic' ? 'automatic' : 'manual';
+      if (nextMode === currentMode) return;
+      finishDrag();
+      cancelLearningCommit(true);
+      setLearningToastVisible(false);
+      if (currentMode === 'manual' && !profileAnimating) persistManualProfile();
+      currentMode = nextMode;
+      previewingMax = false;
+      previewLayer.classList.remove('is-active');
+      updateModeUI();
+      renderLearningControls();
+      renderAmbientLightControl();
+      animateToProfile(currentMode === 'automatic' ? automaticProfile : manualProfile);
+      postNative({ type: 'setMode', mode: currentMode });
+    };
+
+    manualProfile = loadManualProfile() ?? captureProfile();
+    if (learningSupported) {
+      learningToggle.disabled = false;
+      learningToggle.removeAttribute('aria-disabled');
+      if (learningMockState) {
+        currentMode = 'automatic';
+        learningOnboardingCompleted = learningMockState !== 'onboarding';
+        learningEnabled = learningOnboardingCompleted;
+      }
+    }
+    applyProfileInstantly(currentMode === 'automatic' ? automaticProfile : manualProfile);
+    updateModeUI();
+    if (learningMockState === 'onboarding') setLearningOnboardingOpen(true);
+    renderLearningControls();
+    renderAmbientLightControl();
+
+    window.ChillScreenNative = {
+      applyState(state) {
+        applySupportLink(state.supportURL);
+        setValueOfferOpen(state.valueOffer?.presented === true);
+        const nextNativeEnabled = state.enabled !== false;
+        const nextLearningEnabled = state.learning?.enabled === true;
+        const nextLearningRecordingAvailable = state.learning?.recordingAvailable !== false;
+        const nextAmbientLightEnabled = state.ambientLight?.enabled !== false;
+        const nextAmbientLightAvailable = state.ambientLight?.available !== false;
+        const nextAmbientLightLux = Number.isFinite(state.ambientLight?.lux)
+          ? state.ambientLight.lux
+          : null;
+        const nextMode = state.mode === 'automatic' ? 'automatic' : 'manual';
+        const contextChanged = nextNativeEnabled !== nativeEnabled
+          || nextLearningEnabled !== learningEnabled
+          || nextLearningRecordingAvailable !== learningRecordingAvailable
+          || nextMode !== currentMode;
+        applyingNativeState = true;
+        try {
+          if (contextChanged) {
+            cancelLearningCommit(true);
+            setLearningToastVisible(false);
+          }
+          nativeEnabled = nextNativeEnabled;
+          nativeCurrentLevels = state.current ?? null;
+          learningEnabled = nextLearningEnabled;
+          learningRecordingAvailable = nextLearningRecordingAvailable;
+          learningOnboardingCompleted = state.learning?.onboardingCompleted === true;
+          ambientLightEnabled = nextAmbientLightEnabled;
+          ambientLightAvailable = nextAmbientLightAvailable;
+          ambientLightStatus = state.ambientLight?.status ?? 'waiting';
+          ambientLightLux = nextAmbientLightLux;
+          const currentPreference = state.learning?.currentPreference;
+          const adjustmentInProgress = activeLearningHandle !== null
+            || learningMouseDragActive
+            || learningPreviewActive
+            || pendingLearningCommit !== null;
+          if (!adjustmentInProgress && Number.isFinite(currentPreference?.warmth) && Number.isFinite(currentPreference?.dimming)) {
+            learnedTargets.warmth = Math.round(clamp(currentPreference.warmth, 0, 100));
+            learnedTargets.dimming = Math.round(clamp(currentPreference.dimming, 0, 100));
+            learningTargetsInitialized = true;
+            learningPreviewActive = false;
+          } else if (!adjustmentInProgress) {
+            learningTargetsInitialized = false;
+          }
+          if (validProfile(state.manual)) manualProfile = state.manual;
+          if (validProfile(state.automatic)) {
+            Object.assign(automaticProfile.schedule, state.automatic.schedule);
+            Object.keys(automaticProfile.effects).forEach(name => Object.assign(
+              automaticProfile.effects[name],
+              state.automatic.effects[name]
+            ));
+          }
+          const modeChanged = currentMode !== nextMode;
+          currentMode = nextMode;
+          if (modeChanged) previewingMax = false;
+          updateModeUI();
+          renderAmbientLightControl();
+          applyProfileInstantly(currentMode === 'automatic' ? automaticProfile : manualProfile);
+          const coordinates = state.coordinates ?? { latitude: 59.437, longitude: 24.7536 };
+          renderSolarContext(coordinates);
+        } finally {
+          applyingNativeState = false;
+        }
+      },
+      applyCurrent(state) {
+        nativeEnabled = state.enabled !== false;
+        nativeCurrentLevels = state.current ?? null;
+        renderOutputMetrics();
+        renderLearningControls();
+      }
+    };
+
+    tabs.forEach(tab => tab.addEventListener('click', () => setMode(tab.dataset.mode)));
+
+    previewToggle.addEventListener('click', () => {
+      if (!isManualMode()) return;
+      setPreview(!previewingMax);
+    });
+    learningToggle.addEventListener('click', () => {
+      if (!learningSupported || currentMode !== 'automatic') return;
+      if (learningEnabled) setLearningEnabled(false);
+      else if (learningOnboardingCompleted) setLearningEnabled(true);
+      else setLearningOnboardingOpen(true);
+    });
+    ambientLightToggle.addEventListener('click', () => {
+      if (!ambientLightAvailable || currentMode !== 'automatic') return;
+      ambientLightEnabled = !ambientLightEnabled;
+      renderAmbientLightControl();
+      postNative({ type: 'setAmbientLight', enabled: ambientLightEnabled });
+    });
+    learningStart.addEventListener('click', () => setLearningEnabled(true, true));
+    learningNotNow.addEventListener('click', () => setLearningOnboardingOpen(false));
+    learningUndo.addEventListener('click', () => {
+      cancelLearningCommit(true);
+      setLearningToastVisible(false);
+      learningTargetsInitialized = false;
+      renderLearningControls();
+      postNative({ type: 'undoLearningExample' });
+    });
+    const setScienceHelpOpen = enabled => {
+      scienceHelpWrap.classList.toggle('is-open', enabled);
+      scienceHelpButton.setAttribute('aria-expanded', enabled ? 'true' : 'false');
+    };
+    const applySupportLink = value => {
+      const url = typeof value === 'string' ? value : '';
+      if (url) supportLink.href = url;
+      supportBlock.hidden = !url;
+    };
+    let valueOfferOpen = false;
+    let valueOfferPreviousFocus = null;
+    const setValueOfferOpen = enabled => {
+      const next = Boolean(enabled);
+      if (next === valueOfferOpen) return;
+      valueOfferOpen = next;
+      valueOffer.classList.toggle('is-open', next);
+      valueOffer.setAttribute('aria-hidden', next ? 'false' : 'true');
+      document.body.classList.toggle('value-offer-open', next);
+      if (next) {
+        valueOfferPreviousFocus = document.activeElement;
+        requestAnimationFrame(() => valueOfferFree.focus({ preventScroll: true }));
+      } else if (valueOfferPreviousFocus?.focus) {
+        valueOfferPreviousFocus.focus({ preventScroll: true });
+        valueOfferPreviousFocus = null;
+      }
+    };
+    const dismissValueOffer = () => {
+      if (!valueOfferOpen) return;
+      setValueOfferOpen(false);
+      postNative({ type: 'valueOfferDismiss' });
+    };
+    valueOfferClose.addEventListener('click', dismissValueOffer);
+    valueOfferFree.addEventListener('click', () => {
+      setValueOfferOpen(false);
+      postNative({ type: 'valueOfferFree' });
+    });
+    valueOfferAmount.addEventListener('click', () => {
+      setValueOfferOpen(false);
+      postNative({ type: 'valueOfferAmount' });
+    });
+    valueOfferCorporate.addEventListener('click', () => {
+      setValueOfferOpen(false);
+      postNative({ type: 'valueOfferCorporate' });
+    });
+    valueOffer.addEventListener('pointerdown', event => {
+      if (event.target === valueOffer) dismissValueOffer();
+    });
+    scienceHelpButton.addEventListener('click', event => {
+      event.stopPropagation();
+      setScienceHelpOpen(!scienceHelpWrap.classList.contains('is-open'));
+    });
+    researchToggle.addEventListener('click', event => {
+      event.stopPropagation();
+      const expanded = researchToggle.getAttribute('aria-expanded') !== 'true';
+      researchToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      researchToggle.textContent = expanded ? 'Hide research' : 'View research';
+      researchList.hidden = !expanded;
+      setScienceHelpOpen(true);
+    });
+    document.addEventListener('pointerdown', event => {
+      if (!scienceHelpWrap.contains(event.target)) setScienceHelpOpen(false);
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && valueOfferOpen) {
+        event.preventDefault();
+        dismissValueOffer();
+        return;
+      }
+      if (event.key === 'Escape' && previewingMax) setPreview(false);
+      if (event.key === 'Escape') setScienceHelpOpen(false);
+    });
+
+    markers.forEach(marker => {
+      renderMarker(marker);
+      marker.addEventListener('pointerdown', event => {
+        event.preventDefault();
+        finishDrag();
+        activeMarker = marker;
+        activePointerId = event.pointerId;
+        marker.setPointerCapture?.(event.pointerId);
+        marker.classList.add('is-active');
+        marker.focus({ preventScroll: true });
+        setEventTime(marker.dataset.event, xToHour(eventPoint(event).x));
+      });
+      marker.addEventListener('keydown', event => {
+        if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+        event.preventDefault();
+        const direction = event.key === 'ArrowRight' ? 1 : -1;
+        setEventTime(marker.dataset.event, schedule[marker.dataset.event] + direction * (event.shiftKey ? 1 : .25));
+      });
+      marker.addEventListener('focus', () => marker.classList.add('is-active'));
+      marker.addEventListener('blur', () => marker.classList.remove('is-active'));
+      marker.addEventListener('pointerleave', event => {
+        if (event.pointerType === 'mouse' && event.buttons === 0) {
+          if (activeMarker === marker) finishDrag();
+          marker.classList.remove('is-active');
+          marker.blur();
+        }
+      });
+    });
+
+    handles.forEach(handle => {
+      renderEffect(handle.dataset.effect);
+      handle.addEventListener('pointerdown', event => {
+        event.preventDefault();
+        finishDrag();
+        activeHandle = handle;
+        activePointerId = event.pointerId;
+        handle.setPointerCapture?.(event.pointerId);
+        handle.classList.add('is-active');
+        raiseEffect(handle.dataset.effect);
+        handle.focus({ preventScroll: true });
+        const point = eventPoint(event);
+        setEffect(handle.dataset.effect, xToHour(point.x), point.y);
+      });
+      handle.addEventListener('keydown', event => {
+        if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
+        event.preventDefault();
+        const effect = effects[handle.dataset.effect];
+        const timeDelta = event.shiftKey ? 1 : .25;
+        const levelDelta = event.shiftKey ? 12 : 4;
+        if (event.key === 'ArrowLeft') setEffect(handle.dataset.effect, effect.time - timeDelta, effect.y);
+        if (event.key === 'ArrowRight') setEffect(handle.dataset.effect, effect.time + timeDelta, effect.y);
+        if (event.key === 'ArrowUp') setEffect(handle.dataset.effect, effect.time, effect.y - levelDelta);
+        if (event.key === 'ArrowDown') setEffect(handle.dataset.effect, effect.time, effect.y + levelDelta);
+      });
+      handle.addEventListener('focus', () => {
+        handle.classList.add('is-active');
+        raiseEffect(handle.dataset.effect);
+      });
+      handle.addEventListener('blur', () => handle.classList.remove('is-active'));
+    });
+
+    const canAdjustLearning = () => learningSupported
+      && learningEnabled
+      && learningRecordingAvailable
+      && currentMode === 'automatic'
+      && isLearningWindowOpen();
+    const beginLearningAdjustment = (handle, event, pointerId = null) => {
+      if (!canAdjustLearning()) return false;
+      event.preventDefault();
+      finishLearningAdjustment();
+      activeLearningHandle = handle;
+      learningPointerId = pointerId;
+      learningMouseDragActive = pointerId === null;
+      if (pointerId !== null) handle.setPointerCapture?.(pointerId);
+      handle.classList.add('is-active');
+      handle.focus({ preventScroll: true });
+      setLearningTarget(handle.dataset.learningEffect, eventPoint(event).y);
+      return true;
+    };
+
+    learningHandles.forEach(handle => {
+      handle.addEventListener('pointerdown', event => {
+        // WKWebView occasionally loses subsequent pointer events when an SVG
+        // group moves under a captured pointer. Its mouse stream is stable, so
+        // the native app deliberately uses that path instead.
+        if (nativeHost) return;
+        beginLearningAdjustment(handle, event, event.pointerId);
+      });
+      handle.addEventListener('mousedown', event => {
+        if (!nativeHost || event.button !== 0) return;
+        beginLearningAdjustment(handle, event);
+      });
+      handle.addEventListener('keydown', event => {
+        if (!['ArrowUp', 'ArrowDown'].includes(event.key) || !learningEnabled || !learningRecordingAvailable || currentMode !== 'automatic' || !isLearningWindowOpen()) return;
+        event.preventDefault();
+        const name = handle.dataset.learningEffect;
+        learnedTargets[name] = clamp(learnedTargets[name] + (event.key === 'ArrowUp' ? 1 : -1) * (event.shiftKey ? 10 : 2), 0, 100);
+        renderLearningControls();
+        previewLearningTargets();
+      });
+    });
+
+    window.addEventListener('pointermove', event => {
+      if (learningPointerId !== null && event.pointerId === learningPointerId && activeLearningHandle) {
+        event.preventDefault();
+        setLearningTarget(activeLearningHandle.dataset.learningEffect, eventPoint(event).y);
+        return;
+      }
+      if (activePointerId === null || event.pointerId !== activePointerId) return;
+      event.preventDefault();
+      const point = eventPoint(event);
+      if (activeMarker) setEventTime(activeMarker.dataset.event, xToHour(point.x));
+      if (activeHandle) setEffect(activeHandle.dataset.effect, xToHour(point.x), point.y);
+    }, { passive: false });
+    window.addEventListener('mousemove', event => {
+      if (!nativeHost || !learningMouseDragActive || !activeLearningHandle) return;
+      event.preventDefault();
+      setLearningTarget(activeLearningHandle.dataset.learningEffect, eventPoint(event).y);
+    }, { passive: false });
+    window.addEventListener('pointerup', event => {
+      if (event.pointerId === learningPointerId) {
+        finishLearningAdjustment();
+        return;
+      }
+      if (event.pointerId === activePointerId) finishDrag();
+    });
+    window.addEventListener('mouseup', () => {
+      if (nativeHost && learningMouseDragActive) finishLearningAdjustment();
+    });
+    window.addEventListener('pointercancel', event => {
+      if (event.pointerId === learningPointerId) {
+        finishLearningAdjustment();
+        return;
+      }
+      if (event.pointerId === activePointerId) finishDrag();
+    });
+    renderSleepDuration();
+    renderHormones();
+    renderOutputMetrics();
+    renderCurrentTime();
+    window.setInterval(renderOutputMetrics, 30000);
+    window.setInterval(() => {
+      renderCurrentTime();
+      renderLearningControls();
+    }, 30000);
+    if (nativeHost) postNative({ type: 'ready' });
+    else loadSolarContext();
+  </script>
+  <script>
+    (() => {
+      const toolbar = document.querySelector('.toolbar');
+      const chart = document.querySelector('.chart');
+      const status = toolbar?.querySelector('.status');
+      const controls = document.querySelector('.mode-dock');
+      const legend = document.querySelector('.chart-legend');
+      if (toolbar && chart && status && controls && legend) {
+        toolbar.insertBefore(controls, status);
+        chart.prepend(legend);
+      }
+
+      const learning = document.querySelector('#learning-mode');
+      if (learning) {
+        let demoLearningEnabled = learning.getAttribute('aria-checked') === 'true';
+        const syncDemoLearning = () => {
+          const automatic = document.body.classList.contains('automatic-mode');
+          learning.classList.toggle('is-disabled', !automatic);
+          learning.setAttribute('aria-disabled', automatic ? 'false' : 'true');
+          learning.setAttribute('aria-checked', automatic && demoLearningEnabled ? 'true' : 'false');
+          learning.setAttribute('aria-label', demoLearningEnabled ? 'Pause Learning' : 'Start Learning');
+        };
+        learning.disabled = false;
+        learning.addEventListener('click', event => {
+          if (!document.body.classList.contains('automatic-mode')) return;
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          demoLearningEnabled = !demoLearningEnabled;
+          syncDemoLearning();
+        }, true);
+        new MutationObserver(syncDemoLearning).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        syncDemoLearning();
+      }
+
+      const ambientReading = document.querySelector('#ambient-reading');
+      if (ambientReading) {
+        const demoReading = 'e.g. 30 lux';
+        const keepDemoReading = () => {
+          if (ambientReading.textContent !== demoReading) ambientReading.textContent = demoReading;
+        };
+        keepDemoReading();
+        new MutationObserver(keepDemoReading).observe(ambientReading, { childList: true, characterData: true, subtree: true });
+      }
+    })();
+  </script>
+</body>
+</html>

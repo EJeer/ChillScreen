@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#03070d">
+  <meta name="description" content="The complete ChillScreen User Guide: installation, Daily Cycle, Automatic and Manual modes, Ambient Light, Learning, Effect Range, privacy, and troubleshooting.">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <meta property="og:type" content="article"><meta property="og:site_name" content="ChillScreen"><meta property="og:title" content="ChillScreen User Guide"><meta property="og:description" content="Install ChillScreen and understand its Daily Cycle, Warmth, Dimming, Automatic, Manual, Ambient Light, and Learning controls."><meta property="og:image" content="https://ejeer.github.io/ChillScreen/assets/chillscreen-header.png"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1600"><meta property="og:image:height" content="470"><meta property="og:image:alt" content="ChillScreen daily-cycle interface for macOS"><meta property="og:url" content="https://ejeer.github.io/ChillScreen/user-guide/">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="ChillScreen User Guide"><meta name="twitter:description" content="Install ChillScreen and understand its Daily Cycle, Warmth, Dimming, Automatic, Manual, Ambient Light, and Learning controls."><meta name="twitter:image" content="https://ejeer.github.io/ChillScreen/assets/chillscreen-header.png"><meta name="twitter:image:alt" content="ChillScreen daily-cycle interface for macOS">
+  <link rel="canonical" href="https://ejeer.github.io/ChillScreen/user-guide/"><link rel="describedby" href="https://ejeer.github.io/ChillScreen/llms.txt" type="text/plain"><link rel="alternate" type="text/markdown" href="https://raw.githubusercontent.com/EJeer/ChillScreen/main/docs/user-guide.md"><link rel="icon" href="../assets/chillscreen-icon.png" type="image/png" sizes="512x512"><link rel="apple-touch-icon" href="../assets/chillscreen-icon.png"><link rel="stylesheet" href="../assets/site.css"><title>User Guide — ChillScreen</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header"><a class="brand" href="../" aria-label="ChillScreen home"><img src="../assets/chillscreen-icon.png" alt="" width="42" height="42"><span>ChillScreen</span></a><nav aria-label="Primary navigation"><a href="../story/">Story</a><a href="../releases/1.1.0/">Release Notes</a><a href="../privacy/">Privacy</a><a href="https://github.com/EJeer/ChillScreen">GitHub</a></nav><a class="header-download" href="https://github.com/EJeer/ChillScreen/releases/download/v1.1.0/ChillScreen-1.1.0.dmg">Download</a></header>
+  <main class="doc-main" id="main">
+    <a class="doc-back" href="../">← Back to ChillScreen</a>
+    <header class="doc-hero"><p class="eyebrow">Documentation</p><h1>User Guide</h1><p class="doc-lede">Use ChillScreen entirely automatically, teach it your preferences, or tune the Daily Cycle and every effect directly.</p><div class="doc-meta"><span>ChillScreen 1.1.0</span><span>macOS 14 Sonoma or later</span></div></header>
+    <figure class="doc-shot"><img src="../assets/user-guide/chillscreen-header.png" alt="ChillScreen Daily Cycle and Advanced Settings" width="1600" height="470"></figure>
+    <div class="doc-layout">
+      <nav class="doc-toc" aria-label="User Guide contents"><strong>On this page</strong><a href="#getting-started">Getting started</a><a href="#menu-bar">Menu bar</a><a href="#daily-cycle">Daily Cycle</a><a href="#warmth-dimming">Warmth and Dimming</a><a href="#automatic">Automatic</a><a href="#manual">Manual</a><a href="#ambient-light">Ambient Light</a><a href="#learning">Learning</a><a href="#effect-range">Effect Range</a><a href="#diagnostics">Diagnostics</a><a href="#displays">Multiple displays</a><a href="#privacy">Privacy</a><a href="#troubleshooting">Troubleshooting</a></nav>
+      <article class="prose">
+        <h2 id="getting-started">Getting started</h2>
+        <h3>Requirements</h3>
+        <ul><li>macOS 14 Sonoma or later.</li><li>Location access is optional.</li><li>Ambient Light requires a compatible light sensor detected by ChillScreen.</li></ul>
+        <h3>Installation</h3>
+        <ol><li>Download the latest <code>ChillScreen-*.dmg</code> from the GitHub release.</li><li>Open the disk image and drag <strong>ChillScreen</strong> into <strong>Applications</strong>.</li><li>In Applications, Control-click or right-click ChillScreen and choose <strong>Open</strong>.</li><li>Confirm <strong>Open</strong> in the macOS security dialog.</li></ol>
+        <div class="doc-note">ChillScreen is currently distributed as an unsigned build. If <strong>Open</strong> is unavailable, try opening the app once, then use <strong>System Settings → Privacy &amp; Security → Security → Open Anyway</strong>. This is normally required only on first launch.</div>
+        <h3>First setup</h3>
+        <ol><li>Click the ChillScreen icon in the macOS menu bar and open <strong>Daily Cycle</strong>.</li><li>Set your typical <strong>Wake</strong>, <strong>Evening</strong>, and <strong>Bedtime</strong>.</li><li>Choose <strong>Automatic</strong> or <strong>Manual</strong>.</li><li>Optionally enable Location, Ambient Light, Learning, or Launch at Login.</li><li>Turn ChillScreen <strong>On</strong> from the menu-bar menu.</li></ol>
+
+        <h2 id="menu-bar">Menu-bar status and controls</h2>
+        <p>The menu shows whether ChillScreen is On, the active mode and phase, current Dimming and Warmth, and the ambient-light reading in lux when available.</p>
+        <figure class="doc-shot doc-shot--menu"><img src="../assets/user-guide/chillscreen-menu-bar.png" alt="ChillScreen menu-bar status and controls" width="496" height="590" loading="lazy"></figure>
+        <p>From the same menu you can toggle Launch at Login, open Daily Cycle or Advanced Settings, open About, say thanks through Buy me a coffee, or quit the app.</p>
+
+        <h2 id="daily-cycle">Daily Cycle</h2>
+        <p>Daily Cycle puts the whole 24-hour schedule on one shared timeline. It shows Wake, Evening, Bedtime, optional local sunrise and sunset, and four curves:</p>
+        <figure class="doc-shot"><img src="../assets/user-guide/daily-cycle-settings.jpg" alt="ChillScreen Daily Cycle window" width="1600" height="675" loading="lazy"></figure>
+        <ul><li><strong>Warmth</strong> in orange;</li><li><strong>Dimming</strong> in blue;</li><li><strong>Cortisol</strong> reference context in green;</li><li><strong>Melatonin</strong> reference context in purple.</li></ul>
+        <p>The Cortisol and Melatonin curves are normalized, research-informed reference profiles. They are not measurements of your individual hormone levels.</p>
+        <p>Drag Wake, Evening, and Bedtime horizontally along the timeline. You can also select a marker and use the keyboard for finer control. Automatic and Manual keep separate schedules and restore the values saved for each mode.</p>
+
+        <h2 id="warmth-dimming">Warmth and Dimming</h2>
+        <p><strong>Warmth</strong> shifts the display toward warmer, redder tones. <strong>Dimming</strong> reduces perceived brightness. They are independent, so each can use its own maximum strength and transition duration.</p>
+        <p>In Manual mode, drag an effect handle vertically to change its maximum and horizontally to change how long the transition takes from Evening to that maximum. The temporary card shows Transition, Now, and Max.</p>
+        <div class="doc-shot-pair">
+          <figure class="doc-shot"><img src="../assets/user-guide/chillscreen-warmth-control.png" alt="Warmth curve control showing Transition, Now, and Max" width="454" height="716" loading="lazy"></figure>
+          <figure class="doc-shot"><img src="../assets/user-guide/chillscreen-dimming-control.png" alt="Dimming curve control showing Transition, Now, and Max" width="448" height="712" loading="lazy"></figure>
+        </div>
+
+        <h2 id="automatic">Automatic mode</h2>
+        <p>Automatic manages Warmth and Dimming throughout the day. You can still move Wake, Evening, and Bedtime. Depending on your configuration, its calculation can include:</p>
+        <figure class="doc-shot"><img src="../assets/user-guide/chillscreen-automatic-mode.png" alt="Automatic mode selected in ChillScreen" width="1008" height="114" loading="lazy"></figure>
+        <ul><li>your daily schedule and current time;</li><li>optional local sunrise and sunset;</li><li>optional Ambient Light and the current lux level;</li><li>locally learned preferences when Learning is enabled.</li></ul>
+        <p>Location permission is optional. If granted, ChillScreen stores coordinates locally to calculate sunrise and sunset; it does not maintain a location history.</p>
+
+        <h2 id="manual">Manual mode and Preview max</h2>
+        <p>Manual gives direct control over both curves. Use it when you want a specific transition or maximum effect, are testing a comfortable setting, or the current environment is unusual.</p>
+        <figure class="doc-shot"><img src="../assets/user-guide/chillscreen-manual-mode-preview-max.png" alt="Manual mode and Preview max controls" width="1266" height="194" loading="lazy"></figure>
+        <p><strong>Preview max</strong> temporarily applies the strongest Warmth and Dimming configured in Manual. It checks the result without changing the current point in the daily cycle.</p>
+
+        <h2 id="ambient-light">Ambient Light</h2>
+        <p>Open <strong>Advanced Settings → Ambient Light</strong>. In Automatic mode, a darker room can add extra Dimming and Warmth after Evening begins. Ambient Light is independent of Learning and does not operate in Manual mode.</p>
+        <figure class="doc-shot"><img src="../assets/user-guide/chillscreen-ambient-light-settings.png" alt="ChillScreen Ambient Light settings" width="821" height="639" loading="lazy"></figure>
+        <p>When several checked sensors are available, ChillScreen uses the brightest checked reading. You can exclude individual sensors.</p>
+        <h3>Calibration</h3>
+        <figure class="doc-shot"><img src="../assets/user-guide/chillscreen-ambient-light-calibration.png" alt="Ambient Light calibration controls" width="689" height="494" loading="lazy"></figure>
+        <ul><li><strong>Start adapting below</strong> is the level at or above which room light adds nothing.</li><li><strong>Full adjustment below</strong> is the level at or below which the selected maximum is applied.</li><li><strong>Extra dimming</strong> and <strong>Extra warmth</strong> set the maximum additions at the darkest calibrated level.</li><li><strong>Use current</strong> copies the current sensor reading into a threshold.</li></ul>
+        <p>Between the thresholds, influence increases progressively as the room gets darker. Preview Maximum checks the strongest configured ambient effect. If readings stop, ChillScreen keeps the last valid reading instead of inventing a room-light change.</p>
+
+        <h2 id="learning">Learning</h2>
+        <p>Learning uses evening adjustments to refine future Automatic recommendations. It is optional, transparent, and local.</p>
+        <figure class="doc-shot"><img src="../assets/user-guide/chillscreen-learning-history.png" alt="ChillScreen Learning History" width="821" height="640" loading="lazy"></figure>
+        <p>Learning handles are available when ChillScreen is On, Automatic and Learning are selected, and the current time is between Evening and the earlier of Wake or 06:00. Your display changes immediately while you drag.</p>
+        <p>After you stop, ChillScreen waits ten seconds and saves the latest values for that evening. Your choice remains exact today; it influences the recommendation for the next evening. If you adjust several times in one evening, the latest saved record represents that evening, while earlier records remain visible as replaced.</p>
+        <p>Learning History exposes the base-profile weight, newest-evening multiplier, history half-life, individual record weights, effective influence, Undo, and Reset history. Ambient Light is stored separately so temporary room conditions are not learned as a permanent preference.</p>
+
+        <h2 id="effect-range">Effect Range</h2>
+        <p>Open <strong>Advanced Settings → Effect Range</strong> to define what 100% Warmth and 100% Dimming mean on your displays.</p>
+        <figure class="doc-shot"><img src="../assets/user-guide/chillscreen-effect-range-settings.png" alt="ChillScreen Effect Range settings" width="818" height="643" loading="lazy"></figure>
+        <p>Green and Blue remaining can be adjusted independently; lowering both creates a deeper red maximum. Output remaining controls the darkest software Dimming maximum. These settings define the range — they do not set the current effect level.</p>
+        <p>Warmth, Dimming, and Together previews run temporarily on all displays. Restore Effect Defaults returns to the safe default range.</p>
+
+        <h2 id="diagnostics">Diagnostics</h2>
+        <p>Open <strong>Advanced Settings → Diagnostics</strong> to inspect ChillScreen's current operating state and prepare a useful bug report.</p>
+        <figure class="doc-shot"><img src="../assets/user-guide/chillscreen-diagnostics.png" alt="ChillScreen Diagnostics window" width="821" height="637" loading="lazy"></figure>
+        <p>Diagnostics includes the active mode, current and target effect values, display state, Ambient Light availability, and other technical details. Use <strong>Copy Diagnostics</strong> when reporting a reproducible problem. ChillScreen does not capture screen contents.</p>
+
+        <h2 id="displays">Multiple displays and Launch at Login</h2>
+        <p>ChillScreen applies the same active targets to supported connected displays, while tracking each display separately for safe restoration after the app is turned off, quits, wakes, or the display arrangement changes.</p>
+        <p>Enable <strong>Launch at Login</strong> from the menu if you want the daily cycle to start whenever you sign in.</p>
+
+        <h2 id="privacy">Permissions and privacy</h2>
+        <p>ChillScreen does not capture or analyze screen contents. Location, schedules, Learning, Ambient Light preferences, and calibration remain local. Read the complete <a href="../privacy/">Privacy page</a>.</p>
+
+        <h2 id="troubleshooting">Troubleshooting</h2>
+        <h3>The screen does not change</h3><p>Check that ChillScreen is On, the current Warmth or Dimming value is above 0%, the schedule has reached Evening, and the selected mode contains the settings you intended.</p>
+        <h3>Sunrise or sunset looks wrong</h3><p>Enable optional Location access and check that macOS is using the correct time zone.</p>
+        <h3>Learning controls do not appear</h3><p>Confirm that the app is On, Automatic is selected, Learning is enabled, and the time is inside the evening learning window.</p>
+        <h3>Ambient Light is unavailable</h3><p>Some Macs expose their sensor only while the built-in display is open and active. In Advanced Settings, confirm that at least one detected sensor is enabled and wait for the selected polling interval. Automatic continues normally without a reading.</p>
+        <h3>Reporting a problem</h3><p>Open <strong>Advanced Settings → Diagnostics</strong> and use <strong>Copy Diagnostics</strong>. Include your macOS version, Mac model, connected displays, expected behavior, actual behavior, and reproduction steps. Do not post private coordinates in a public issue.</p>
+
+        <h2 id="updates">Updates, availability, and turning the app off</h2>
+        <p>ChillScreen does not currently update itself. Quit the app, replace it in Applications with the latest release, and launch it again. Preferences and Learning history are stored separately and remain available.</p>
+        <p>Turning ChillScreen Off restores affected displays. Every feature remains available after two weeks, including when you choose €0.</p>
+        <div class="doc-actions"><a class="button button-primary" href="https://github.com/EJeer/ChillScreen/releases/download/v1.1.0/ChillScreen-1.1.0.dmg">Download for macOS</a><a class="button button-secondary" href="https://github.com/EJeer/ChillScreen/issues">Report an issue</a></div>
+      </article>
+    </div>
+  </main>
+  <footer><div class="footer-brand"><img src="../assets/chillscreen-icon.png" alt="" width="32" height="32"><span>ChillScreen</span></div><div class="footer-links"><a href="../">Home</a><a href="../story/">Story</a><a href="../privacy/">Privacy</a><a href="https://buymeacoffee.com/chillscreen">Buy me a coffee</a></div><p>© EJeer</p></footer>
+</body>
+</html>
